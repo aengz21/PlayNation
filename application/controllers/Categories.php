@@ -33,8 +33,7 @@ class Categories extends CI_Controller
     public function add()
     {
         $data = array(
-            'kategori' => $this->input->post('kategori'),
-            'icon' => $this->input->post('icon'),
+            'kategori' => $this->input->post('kategori')
         );
         if ($this->m_categories->is_category_exist($data['kategori'])) {
             $this->session->set_flashdata('error', 'Data Kategori Sudah Ada !');

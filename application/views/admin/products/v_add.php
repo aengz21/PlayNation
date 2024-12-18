@@ -47,6 +47,25 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label>BRAND</label>
+                                    <select name="brand" class="form-control">
+                                        <?php foreach ($brand as $b ) { ?> 
+                                        <option value="<?= $b->id ?>"><?= $b->brands; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Stok</label>
+                                    <input type="number" name="stock" class="form-control" value="<?= set_value('stock') ?>" placeholder="Stok Barang">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label>BERAT (gram)</label>
                                     <input type="number" name="weight" class="form-control" value="<?= set_value('weight') ?>" placeholder="Berat Produk (gram)">
                                 </div>

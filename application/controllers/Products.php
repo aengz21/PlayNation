@@ -11,6 +11,7 @@ class Products extends CI_Controller
         $this->load->model('m_products');
         $this->load->model('m_categories');
         $this->load->model('m_settings');
+        $this->load->model('m_brands');
     }
 
     public function index()
@@ -36,7 +37,7 @@ class Products extends CI_Controller
 
         $this->form_validation->set_rules(
             'kategori',
-            'Nama Brand',
+            'Nama Kategori',
             'required',
             array('required' => '%s Harus Di Isi')
         );
@@ -51,6 +52,12 @@ class Products extends CI_Controller
         $this->form_validation->set_rules(
             'weight',
             'Berat',
+            'required',
+            array('required' => '%s Harus Di Isi !')
+        );
+        $this->form_validation->set_rules(
+            'stock',
+            'Stok',
             'required',
             array('required' => '%s Harus Di Isi !')
         );
@@ -71,7 +78,7 @@ class Products extends CI_Controller
 
         if ($this->form_validation->run() == True) {
             $config['upload_path'] = './assets/products_img/';
-            $config['allowed_types'] = 'gif|jpg|png|jpeg';
+            $config['allowed_types'] = 'gif|jpg|jpeg|png';
             $config['max_size']     = '2000';
             $this->upload->initialize($config);
             $field_name = "img";
@@ -79,6 +86,7 @@ class Products extends CI_Controller
                 $data = array(
                     'title' => 'Add Product',
                     'category' => $this->m_categories->get_all_data(),
+                    'brand' => $this->m_brands->get_all_data(),
                     'settings' => $this->m_settings->get_data(),
                     'error_upload' => $this->upload->display_errors(),
                     'content' => 'admin/products/v_add',
@@ -93,10 +101,12 @@ class Products extends CI_Controller
                 $data = array(
                     'title' => $this->input->post('title'),
                     'id_category' => $this->input->post('kategori'),
+                    'id_brand' => $this->input->post('brand'),
                     'price' => $this->input->post('price'),
                     'weight' => $this->input->post('weight'),
                     'discount' => $this->input->post('discount'),
                     'description' => $this->input->post('description'),
+                    'stock' => $this->input->post('stock'),
                     'img' => $upload_data['uploads']['file_name'],
                 );
                 $this->m_products->add($data);
@@ -107,6 +117,7 @@ class Products extends CI_Controller
         $data = array(
             'title' => 'Add Product',
             'category' => $this->m_categories->get_all_data(),
+            'brand' => $this->m_brands->get_all_data(),
             'settings' => $this->m_settings->get_data(),
             'content' => 'admin/products/v_add',
         );
@@ -156,9 +167,11 @@ class Products extends CI_Controller
             'id_product' => $id_product,
             'title' => $this->input->post('title') ? $this->input->post('title') : $product->title,
             'id_category' => $this->input->post('kategori') ? $this->input->post('kategori') : $product->id_category,
+            'id_brand' => $this->input->post('brand') ? $this->input->post('brand') : $product->id_brand,
             'price' => $this->input->post('price') ? $this->input->post('price') : $product->price,
             'weight' => $this->input->post('weight') ? $this->input->post('weight') : $product->weight,
             'discount' => $this->input->post('discount') ? $this->input->post('discount') : $product->discount,
+            'stock' => $this->input->post('stok') ? $this->input->post('stok') : $product->stock,
             'description' => $this->input->post('description') ? $this->input->post('description') : $product->description,
             'img' => $img,
         );
@@ -171,6 +184,7 @@ class Products extends CI_Controller
     $data = array(
         'title' => 'Update Product',
         'category' => $this->m_categories->get_all_data(),
+        'brands' => $this->m_brands->get_all_data(),
         'settings' => $this->m_settings->get_data(),
         'product' => $this->m_products->get_data($id_product),
         'content' => 'admin/products/v_update',

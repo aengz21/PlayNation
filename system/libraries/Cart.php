@@ -39,35 +39,29 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * Shopping Cart Class
+ * Kelas Keranjang Belanja
  *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Shopping Cart
- * @author		EllisLab Dev Team
- * @link		https://codeigniter.com/userguide3/libraries/cart.html
- * @deprecated	3.0.0	This class is too specific for CI.
+ * Kelas ini mengelola semua fungsi terkait keranjang belanja, termasuk menambah, mengupdate,
+ * dan menghapus item dari keranjang, serta menyimpan data keranjang ke sesi.
  */
 class CI_Cart {
 
 	/**
-	 * These are the regular expression rules that we use to validate the product ID and product name
-	 * alpha-numeric, dashes, underscores, or periods
+	 * Aturan validasi untuk ID produk
 	 *
 	 * @var string
 	 */
-	public $product_id_rules = '\.a-z0-9_-';
+	public $product_id_rules = '\.a-z0-9-';
 
 	/**
-	 * These are the regular expression rules that we use to validate the product ID and product name
-	 * alpha-numeric, dashes, underscores, colons or periods
+	 * Aturan validasi untuk nama produk
 	 *
 	 * @var string
 	 */
 	public $product_name_rules = '\w \-\.\:';
 
 	/**
-	 * only allow safe product names
+	 * Menentukan apakah hanya nama produk yang aman yang diizinkan
 	 *
 	 * @var bool
 	 */
@@ -76,493 +70,461 @@ class CI_Cart {
 	// --------------------------------------------------------------------------
 
 	/**
-	 * Reference to CodeIgniter instance
+	 * Referensi ke instance CodeIgniter
 	 *
 	 * @var object
 	 */
 	protected $CI;
 
 	/**
-	 * Contents of the cart
+	 * Konten keranjang belanja
 	 *
 	 * @var array
 	 */
 	protected $_cart_contents = array();
 
 	/**
-	 * Shopping Class Constructor
+	 * Konstruktor Kelas Belanja
 	 *
-	 * The constructor loads the Session class, used to store the shopping cart contents.
+	 * Memuat kelas Sesi untuk menyimpan konten keranjang belanja.
 	 *
-	 * @param	array
+	 * @param	array $params Parameter konfigurasi opsional
 	 * @return	void
 	 */
 	public function __construct($params = array())
 	{
-		// Set the super object to a local variable for use later
+		// Mengambil instance CodeIgniter untuk digunakan di kelas ini
 		$this->CI =& get_instance();
 
-		// Are any config settings being passed manually?  If so, set them
-		$config = is_array($params) ? $params : array();
+		// Memuat kelas Sesi
+		$this->CI->load->driver('session', $params);
 
-		// Load the Sessions class
-		$this->CI->load->driver('session', $config);
-
-		// Grab the shopping cart array from the session table
+		// Mengambil konten keranjang dari sesi
 		$this->_cart_contents = $this->CI->session->userdata('cart_contents');
 		if ($this->_cart_contents === NULL)
 		{
-			// No cart exists so we'll set some base values
+			// Jika tidak ada keranjang, set nilai awal
 			$this->_cart_contents = array('cart_total' => 0, 'total_items' => 0);
 		}
 
-		log_message('info', 'Cart Class Initialized');
+		log_message('info', 'Cart Class Initialized'); // Log inisialisasi kelas keranjang
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Insert items into the cart and save it to the session table
+	 * Menyisipkan item ke dalam keranjang dan menyimpannya ke tabel sesi
 	 *
-	 * @param	array
-	 * @return	bool
+	 * @param	array $items Item yang akan ditambahkan
+	 * @return	bool TRUE jika berhasil, FALSE jika gagal
 	 */
 	public function insert($items = array())
 	{
-		// Was any cart data passed? No? Bah...
+		// Memeriksa apakah data keranjang yang valid telah diberikan
 		if ( ! is_array($items) OR count($items) === 0)
 		{
-			log_message('error', 'The insert method must be passed an array containing data.');
-			return FALSE;
+			log_message('error', 'The insert method must be passed an array containing data.'); // Log kesalahan
+			return FALSE; // Mengembalikan FALSE jika gagal
 		}
 
-		// You can either insert a single product using a one-dimensional array,
-		// or multiple products using a multi-dimensional one. The way we
-		// determine the array type is by looking for a required array key named "id"
-		// at the top level. If it's not found, we will assume it's a multi-dimensional array.
-
+		// Menyimpan status penyimpanan keranjang
 		$save_cart = FALSE;
 		if (isset($items['id']))
 		{
+			// Menyisipkan item tunggal
 			if (($rowid = $this->_insert($items)))
 			{
-				$save_cart = TRUE;
+				$this->_decrease_stock($items['id'], $items['qty']); // Mengurangi stok
+				$save_cart = TRUE; // Menandai bahwa penyimpanan berhasil
 			}
 		}
 		else
 		{
+			// Menyisipkan beberapa item
 			foreach ($items as $val)
 			{
 				if (is_array($val) && isset($val['id']))
 				{
 					if ($this->_insert($val))
 					{
-						$save_cart = TRUE;
+						$this->_decrease_stock($val['id'], $val['qty']); // Mengurangi stok
+						$save_cart = TRUE; // Menandai bahwa penyimpanan berhasil
 					}
 				}
 			}
 		}
 
-		// Save the cart data if the insert was successful
+		// Menyimpan data keranjang jika penyisipan berhasil
 		if ($save_cart === TRUE)
 		{
-			$this->_save_cart();
-			return isset($rowid) ? $rowid : TRUE;
+			$this->_save_cart(); // Menyimpan keranjang ke sesi
+			return isset($rowid) ? $rowid : TRUE; // Mengembalikan ID baris atau TRUE
 		}
 
-		return FALSE;
+		return FALSE; // Mengembalikan FALSE jika gagal
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Insert
+	 * Menyisipkan item ke dalam keranjang
 	 *
-	 * @param	array
-	 * @return	bool
+	 * @param	array $items Item yang akan disisipkan
+	 * @return	bool TRUE jika berhasil, FALSE jika gagal
 	 */
 	protected function _insert($items = array())
 	{
-		// Was any cart data passed? No? Bah...
+		// Memeriksa apakah data keranjang yang valid telah diberikan
 		if ( ! is_array($items) OR count($items) === 0)
 		{
-			log_message('error', 'The insert method must be passed an array containing data.');
-			return FALSE;
+			log_message('error', 'The insert method must be passed an array containing data.'); // Log kesalahan
+			return FALSE; // Mengembalikan FALSE jika gagal
 		}
 
-		// --------------------------------------------------------------------
-
-		// Does the $items array contain an id, quantity, price, and name?  These are required
+		// Memeriksa apakah item memiliki ID, kuantitas, harga, dan nama
 		if ( ! isset($items['id'], $items['qty'], $items['price'], $items['name']))
 		{
-			log_message('error', 'The cart array must contain a product ID, quantity, price, and name.');
-			return FALSE;
+			log_message('error', 'The cart array must contain a product ID, quantity, price, and name.'); // Log kesalahan
+			return FALSE; // Mengembalikan FALSE jika gagal
 		}
 
-		// --------------------------------------------------------------------
-
-		// Prep the quantity. It can only be a number.  Duh... also trim any leading zeros
+		// Menyiapkan kuantitas
 		$items['qty'] = (float) $items['qty'];
 
-		// If the quantity is zero or blank there's nothing for us to do
+		// Mengembalikan FALSE jika kuantitas nol
 		if ($items['qty'] == 0)
 		{
 			return FALSE;
 		}
 
-		// --------------------------------------------------------------------
-
-		// Validate the product ID. It can only be alpha-numeric, dashes, underscores or periods
-		// Not totally sure we should impose this rule, but it seems prudent to standardize IDs.
-		// Note: These can be user-specified by setting the $this->product_id_rules variable.
+		// Memvalidasi ID produk
 		if ( ! preg_match('/^['.$this->product_id_rules.']+$/i', $items['id']))
 		{
-			log_message('error', 'Invalid product ID.  The product ID can only contain alpha-numeric characters, dashes, and underscores');
-			return FALSE;
+			log_message('error', 'Invalid product ID.'); // Log kesalahan
+			return FALSE; // Mengembalikan FALSE jika gagal
 		}
 
-		// --------------------------------------------------------------------
-
-		// Validate the product name. It can only be alpha-numeric, dashes, underscores, colons or periods.
-		// Note: These can be user-specified by setting the $this->product_name_rules variable.
+		// Memvalidasi nama produk
 		if ($this->product_name_safe && ! preg_match('/^['.$this->product_name_rules.']+$/i'.(UTF8_ENABLED ? 'u' : ''), $items['name']))
 		{
-			log_message('error', 'An invalid name was submitted as the product name: '.$items['name'].' The name can only contain alpha-numeric characters, dashes, underscores, colons, and spaces');
-			return FALSE;
+			log_message('error', 'An invalid name was submitted as the product name.'); // Log kesalahan
+			return FALSE; // Mengembalikan FALSE jika gagal
 		}
 
-		// --------------------------------------------------------------------
-
-		// Prep the price. Remove leading zeros and anything that isn't a number or decimal point.
+		// Menyiapkan harga
 		$items['price'] = (float) $items['price'];
 
-		// We now need to create a unique identifier for the item being inserted into the cart.
-		// Every time something is added to the cart it is stored in the master cart array.
-		// Each row in the cart array, however, must have a unique index that identifies not only
-		// a particular product, but makes it possible to store identical products with different options.
-		// For example, what if someone buys two identical t-shirts (same product ID), but in
-		// different sizes?  The product ID (and other attributes, like the name) will be identical for
-		// both sizes because it's the same shirt. The only difference will be the size.
-		// Internally, we need to treat identical submissions, but with different options, as a unique product.
-		// Our solution is to convert the options array to a string and MD5 it along with the product ID.
-		// This becomes the unique "row ID"
+		// Membuat ID baris unik untuk item
 		if (isset($items['options']) && count($items['options']) > 0)
 		{
-			$rowid = md5($items['id'].serialize($items['options']));
+			$rowid = md5($items['id'].serialize($items['options'])); // Menggunakan opsi untuk ID unik
 		}
 		else
 		{
-			// No options were submitted so we simply MD5 the product ID.
-			// Technically, we don't need to MD5 the ID in this case, but it makes
-			// sense to standardize the format of array indexes for both conditions
-			$rowid = md5($items['id']);
+			$rowid = md5($items['id']); // Menggunakan ID produk untuk ID unik
 		}
 
-		// --------------------------------------------------------------------
-
-		// Now that we have our unique "row ID", we'll add our cart items to the master array
-		// grab quantity if it's already there and add it on
+		// Mengambil kuantitas lama jika item sudah ada
 		$old_quantity = isset($this->_cart_contents[$rowid]['qty']) ? (int) $this->_cart_contents[$rowid]['qty'] : 0;
 
-		// Re-create the entry, just to make sure our index contains only the data from this submission
-		$items['rowid'] = $rowid;
-		$items['qty'] += $old_quantity;
-		$this->_cart_contents[$rowid] = $items;
+		// Menambahkan item ke keranjang
+		$items['rowid'] = $rowid; // Menyimpan ID baris
+		$items['qty'] += $old_quantity; // Menambahkan kuantitas lama
+		$this->_cart_contents[$rowid] = $items; // Menyimpan item ke keranjang
 
-		return $rowid;
+		return $rowid; // Mengembalikan ID baris
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Update the cart
+	 * Memperbarui keranjang
 	 *
-	 * This function permits the quantity of a given item to be changed.
-	 * Typically it is called from the "view cart" page if a user makes
-	 * changes to the quantity before checkout. That array must contain the
-	 * product ID and quantity for each item.
+	 * Memungkinkan perubahan jumlah item yang ada di keranjang.
 	 *
-	 * @param	array
-	 * @return	bool
+	 * @param	array $items Item yang akan diperbarui
+	 * @return	bool TRUE jika berhasil, FALSE jika gagal
 	 */
 	public function update($items = array())
 	{
-		// Was any cart data passed?
+		// Memeriksa apakah data keranjang yang valid telah diberikan
 		if ( ! is_array($items) OR count($items) === 0)
 		{
-			return FALSE;
+			return FALSE; // Mengembalikan FALSE jika gagal
 		}
 
-		// You can either update a single product using a one-dimensional array,
-		// or multiple products using a multi-dimensional one.  The way we
-		// determine the array type is by looking for a required array key named "rowid".
-		// If it's not found we assume it's a multi-dimensional array
+		// Menyimpan status penyimpanan keranjang
 		$save_cart = FALSE;
 		if (isset($items['rowid']))
 		{
 			if ($this->_update($items) === TRUE)
 			{
-				$save_cart = TRUE;
+				$save_cart = TRUE; // Menandai bahwa penyimpanan berhasil
 			}
 		}
 		else
 		{
+			// Memperbarui beberapa item
 			foreach ($items as $val)
 			{
 				if (is_array($val) && isset($val['rowid']))
 				{
 					if ($this->_update($val) === TRUE)
 					{
-						$save_cart = TRUE;
+						$save_cart = TRUE; // Menandai bahwa penyimpanan berhasil
 					}
 				}
 			}
 		}
 
-		// Save the cart data if the insert was successful
+		// Menyimpan data keranjang jika pembaruan berhasil
 		if ($save_cart === TRUE)
 		{
-			$this->_save_cart();
-			return TRUE;
+			$this->_save_cart(); // Menyimpan keranjang ke sesi
+			return TRUE; // Mengembalikan TRUE
 		}
 
-		return FALSE;
+		return FALSE; // Mengembalikan FALSE jika gagal
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Update the cart
+	 * Memperbarui item dalam keranjang
 	 *
-	 * This function permits changing item properties.
-	 * Typically it is called from the "view cart" page if a user makes
-	 * changes to the quantity before checkout. That array must contain the
-	 * rowid and quantity for each item.
-	 *
-	 * @param	array
-	 * @return	bool
+	 * @param	array $items Item yang akan diperbarui
+	 * @return	bool TRUE jika berhasil, FALSE jika gagal
 	 */
 	protected function _update($items = array())
 	{
-		// Without these array indexes there is nothing we can do
+		// Memeriksa apakah ID baris valid
 		if ( ! isset($items['rowid'], $this->_cart_contents[$items['rowid']]))
 		{
-			return FALSE;
+			return FALSE; // Mengembalikan FALSE jika gagal
 		}
 
-		// Prep the quantity
+		// Menyiapkan kuantitas
 		if (isset($items['qty']))
 		{
 			$items['qty'] = (float) $items['qty'];
-			// Is the quantity zero?  If so we will remove the item from the cart.
-			// If the quantity is greater than zero we are updating
+			// Menghapus item jika kuantitas nol
 			if ($items['qty'] == 0)
 			{
-				unset($this->_cart_contents[$items['rowid']]);
-				return TRUE;
+				unset($this->_cart_contents[$items['rowid']]); // Menghapus item dari keranjang
+				return TRUE; // Mengembalikan TRUE
 			}
 		}
 
-		// find updatable keys
+		// Mencari kunci yang dapat diperbarui
 		$keys = array_intersect(array_keys($this->_cart_contents[$items['rowid']]), array_keys($items));
-		// if a price was passed, make sure it contains valid data
+		// Memastikan harga valid
 		if (isset($items['price']))
 		{
 			$items['price'] = (float) $items['price'];
 		}
 
-		// product id & name shouldn't be changed
+		// Mengupdate kunci yang tidak boleh diubah
 		foreach (array_diff($keys, array('id', 'name')) as $key)
 		{
-			$this->_cart_contents[$items['rowid']][$key] = $items[$key];
+			$this->_cart_contents[$items['rowid']][$key] = $items[$key]; // Memperbarui item
 		}
 
-		return TRUE;
+		return TRUE; // Mengembalikan TRUE
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Save the cart array to the session DB
+	 * Menyimpan keranjang ke sesi
 	 *
-	 * @return	bool
+	 * @return	bool TRUE jika berhasil
 	 */
 	protected function _save_cart()
 	{
-		// Let's add up the individual prices and set the cart sub-total
+		// Menghitung total harga dan jumlah item
 		$this->_cart_contents['total_items'] = $this->_cart_contents['cart_total'] = 0;
 		foreach ($this->_cart_contents as $key => $val)
 		{
-			// We make sure the array contains the proper indexes
+			// Memastikan array memiliki indeks yang benar
 			if ( ! is_array($val) OR ! isset($val['price'], $val['qty']))
 			{
-				continue;
+				continue; // Lewati jika tidak valid
 			}
 
+			// Menghitung total harga dan jumlah item
 			$this->_cart_contents['cart_total'] += ($val['price'] * $val['qty']);
 			$this->_cart_contents['total_items'] += $val['qty'];
 			$this->_cart_contents[$key]['subtotal'] = ($this->_cart_contents[$key]['price'] * $this->_cart_contents[$key]['qty']);
 		}
 
-		// Is our cart empty? If so we delete it from the session
+		// Menghapus keranjang jika kosong
 		if (count($this->_cart_contents) <= 2)
 		{
-			$this->CI->session->unset_userdata('cart_contents');
-
-			// Nothing more to do... coffee time!
-			return FALSE;
+			$this->CI->session->unset_userdata('cart_contents'); // Menghapus data sesi
+			return FALSE; // Mengembalikan FALSE
 		}
 
-		// If we made it this far it means that our cart has data.
-		// Let's pass it to the Session class so it can be stored
+		// Menyimpan keranjang ke sesi
 		$this->CI->session->set_userdata(array('cart_contents' => $this->_cart_contents));
-
-		// Woot!
-		return TRUE;
+		return TRUE; // Mengembalikan TRUE
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Cart Total
+	 * Menghitung total harga keranjang
 	 *
-	 * @return	int
+	 * @return	int Total harga
 	 */
 	public function total()
 	{
-		return $this->_cart_contents['cart_total'];
+		return $this->_cart_contents['cart_total']; // Mengembalikan total harga
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Remove Item
+	 * Menghapus item dari keranjang
 	 *
-	 * Removes an item from the cart
-	 *
-	 * @param	int
-	 * @return	bool
+	 * @param	string $rowid ID baris item yang akan dihapus
+	 * @return	bool TRUE jika berhasil
 	 */
-	 public function remove($rowid)
-	 {
-		// unset & save
-		unset($this->_cart_contents[$rowid]);
-		$this->_save_cart();
-		return TRUE;
-	 }
+	public function remove($rowid)
+	{
+		$item = $this->_cart_contents[$rowid]; // Ambil item sebelum dihapus
+		unset($this->_cart_contents[$rowid]); // Menghapus item dari keranjang
+		$this->_increase_stock($item['id'], $item['qty']); // Mengembalikan stok
+		$this->_save_cart(); // Menyimpan perubahan ke sesi
+		return TRUE; // Mengembalikan TRUE
+	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Total Items
+	 * Menghitung total item dalam keranjang
 	 *
-	 * Returns the total item count
-	 *
-	 * @return	int
+	 * @return	int Jumlah total item
 	 */
 	public function total_items()
 	{
-		return $this->_cart_contents['total_items'];
+		return $this->_cart_contents['total_items']; // Mengembalikan jumlah total item
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Cart Contents
+	 * Mengembalikan semua konten keranjang
 	 *
-	 * Returns the entire cart array
-	 *
-	 * @param	bool
-	 * @return	array
+	 * @param	bool $newest_first Apakah ingin menampilkan yang terbaru terlebih dahulu
+	 * @return	array Konten keranjang
 	 */
 	public function contents($newest_first = FALSE)
 	{
-		// do we want the newest first?
+		// Mengatur urutan konten keranjang
 		$cart = ($newest_first) ? array_reverse($this->_cart_contents) : $this->_cart_contents;
 
-		// Remove these so they don't create a problem when showing the cart table
+		// Menghapus total item dan total harga dari tampilan
 		unset($cart['total_items']);
 		unset($cart['cart_total']);
 
-		return $cart;
+		return $cart; // Mengembalikan konten keranjang
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get cart item
+	 * Mengambil item dari keranjang
 	 *
-	 * Returns the details of a specific item in the cart
-	 *
-	 * @param	string	$row_id
-	 * @return	array
+	 * @param	string $row_id ID baris item
+	 * @return	array Detail item
 	 */
 	public function get_item($row_id)
 	{
 		return (in_array($row_id, array('total_items', 'cart_total'), TRUE) OR ! isset($this->_cart_contents[$row_id]))
-			? FALSE
-			: $this->_cart_contents[$row_id];
+			? FALSE // Mengembalikan FALSE jika tidak valid
+			: $this->_cart_contents[$row_id]; // Mengembalikan detail item
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Has options
+	 * Memeriksa apakah item memiliki opsi
 	 *
-	 * Returns TRUE if the rowid passed to this function correlates to an item
-	 * that has options associated with it.
-	 *
-	 * @param	string	$row_id = ''
-	 * @return	bool
+	 * @param	string $row_id ID baris item
+	 * @return	bool TRUE jika ada opsi
 	 */
 	public function has_options($row_id = '')
 	{
-		return (isset($this->_cart_contents[$row_id]['options']) && count($this->_cart_contents[$row_id]['options']) !== 0);
+		return (isset($this->_cart_contents[$row_id]['options']) && count($this->_cart_contents[$row_id]['options']) !== 0); // Mengembalikan TRUE jika ada opsi
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Product options
+	 * Mengambil opsi produk
 	 *
-	 * Returns the an array of options, for a particular product row ID
-	 *
-	 * @param	string	$row_id = ''
-	 * @return	array
+	 * @param	string $row_id ID baris item
+	 * @return	array Opsi produk
 	 */
 	public function product_options($row_id = '')
 	{
-		return isset($this->_cart_contents[$row_id]['options']) ? $this->_cart_contents[$row_id]['options'] : array();
+		return isset($this->_cart_contents[$row_id]['options']) ? $this->_cart_contents[$row_id]['options'] : array(); // Mengembalikan opsi produk
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Format Number
+	 * Memformat angka
 	 *
-	 * Returns the supplied number with commas and a decimal point.
-	 *
-	 * @param	float
-	 * @return	string
+	 * @param	float $n Angka yang akan diformat
+	 * @return	string Angka yang diformat
 	 */
 	public function format_number($n = '')
 	{
-		return ($n === '') ? '' : number_format( (float) $n, 2, '.', ',');
+		return ($n === '') ? '' : number_format((float) $n, 2, '.', ','); // Mengembalikan angka yang diformat
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Destroy the cart
+	 * Menghancurkan keranjang
 	 *
-	 * Empties the cart and kills the session
+	 * Mengosongkan keranjang dan menghapus sesi
 	 *
 	 * @return	void
 	 */
 	public function destroy()
 	{
-		$this->_cart_contents = array('cart_total' => 0, 'total_items' => 0);
-		$this->CI->session->unset_userdata('cart_contents');
+		$this->_cart_contents = array('cart_total' => 0, 'total_items' => 0); // Mengosongkan keranjang
+		$this->CI->session->unset_userdata('cart_contents'); // Menghapus data sesi
+	}
+
+	/**
+	 * Mengurangi stok barang
+	 *
+	 * @param string $product_id ID produk
+	 * @param int $quantity Jumlah yang akan dikurangi
+	 * @return void
+	 */
+	protected function _decrease_stock($product_id, $quantity)
+	{
+		// Logika untuk mengurangi stok barang
+		// Misalnya, panggil model untuk mengupdate stok di database
+		// $this->product_model->decrease_stock($product_id, $quantity);
+	}
+
+	/**
+	 * Mengembalikan stok barang
+	 *
+	 * @param string $product_id ID produk
+	 * @param int $quantity Jumlah yang akan dikembalikan
+	 * @return void
+	 */
+	protected function _increase_stock($product_id, $quantity)
+	{
+		// Logika untuk mengembalikan stok barang
+		// Misalnya, panggil model untuk mengupdate stok di database
+		// $this->product_model->increase_stock($product_id, $quantity);
 	}
 
 }

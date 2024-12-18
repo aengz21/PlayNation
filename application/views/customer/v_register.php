@@ -10,11 +10,26 @@
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <h5><i class="icon fas fa-exclamation-triangle"></i> Alert!</h5>', '</div>');
 
-                    if ($this->session->flashdata('pesan')) {
+                    if ($this->session->flashdata('gagal')) {
+                        echo '<div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <h5><i class="icon fas fa-check"></i> Sukses!</h5>';
+                        echo $this->session->flashdata('gagal');
+                        echo '</div>';
+                    }
+                    if ($this->session->flashdata('berhasil')) {
                         echo '<div class="alert alert-success alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         <h5><i class="icon fas fa-check"></i> Sukses!</h5>';
-                        echo $this->session->flashdata('pesan');
+                        echo $this->session->flashdata('berhasil');
+                        echo '</div>';
+                    }
+
+                    if ($this->session->flashdata('activation_message')) {
+                        echo '<div class="alert alert-info alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <h5><i class="icon fas fa-info"></i> Info!</h5>';
+                        echo $this->session->flashdata('activation_message');
                         echo '</div>';
                     }
 

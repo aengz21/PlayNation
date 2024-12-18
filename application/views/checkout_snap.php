@@ -13,7 +13,7 @@
     <button id="pay-button">Pay!</button>
     <script type="text/javascript"
             src="https://app.sandbox.midtrans.com/snap/snap.js"
-            data-client-key="SB-Mid-client-wa-wyKb-Pv2vsXiG"></script>
+            data-client-key="SB-Mid-client-n_DRXjV9g_32CV9S"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script type="text/javascript">
     $('#pay-button').click(function (event) {

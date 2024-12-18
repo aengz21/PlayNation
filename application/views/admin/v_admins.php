@@ -130,7 +130,7 @@
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="text" name="password" value="<?= $value->password ?>" class="form-control" placeholder="Password" required>
+                        <input type="text" name="password"  class="form-control" placeholder="Password" required>
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>

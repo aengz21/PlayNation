@@ -27,12 +27,12 @@
                             <label>GAMBAR</label>
                             <input type="file" name="img" class="form-control" >
                         </div>
-
+                        
                         <div class="form-group">
                             <label>NAMA PRODUK</label>
                             <input type="text" name="title" value="<?= $product->title; ?>" placeholder="Masukkan Nama Produk" class="form-control">
                         </div>
-
+                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -40,19 +40,32 @@
                                     <select name="kategori" class="form-control">
                                         <option value="<?= $product->id_category ?>"><?= $product->kategori ?></option>
                                         <?php foreach ($category as $key => $value) { ?>
-                                        <option value="<?= $value->id ?>"><?= $value->kategori; ?></option>
-                                        <?php } ?>
-                                    </select>
+                                            <option value="<?= $value->id ?>"><?= $value->kategori; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                        <div class="form-group">
+                                            <label>Brand</label>
+                                            <select name="brand" class="form-control">
+                                            <option value="<?= $product->id_brand ?>"><?= $product->brands ?></option>
+                                                <?php foreach ($brands as $key => $value) { ?>
+                                                    <option value="<?= $value->id ?>"><?= $value->brands; ?></option>
+                                                    <?php } ?>
+                                                </select>
+                                        </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>BERAT (gram)</label>
                                     <input type="number" name="weight" class="form-control" value="<?= $product->weight ?>" placeholder="Berat Produk (gram)">
+                                    <div class="form-group">
+                                        <label>Stok</label>
+                                        <input type="number" name="stok" class="form-control" value="<?= $product->stock ?>" placeholder="Stok Barang">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
+                        
                         <div class="form-group">
                             <label>DESKRIPSI</label>
                             <textarea class="form-control content" name="description" rows="6" placeholder="Deskripsi Produk"><?= $product->description ?></textarea>

@@ -1,3 +1,6 @@
+<head>
+</head>
+
 <div class="container-fluid mb-5 mt-4">
     <div class="row">
         <div class="col-md-6">
@@ -134,10 +137,17 @@
                             <div class="form-group">
                                 <label for="kota" class="font-weight-bold">KOTA / KABUPATEN</label>
                                 <select id="kota" name="kota" class="form-control">
-                                </select>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-
+                            
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">LOKASI PENGIRIMAN</label>
+                                    <textarea class="form-control" name="alamat" id="alamat" rows="3" placeholder="ALAMAT TUJUAN&#10;&#10;Contoh: Perum. Griya Palem Indah, B-17 Jombang Jawa Timur 61419" required></textarea>
+                                </div>
+                            </div>
+                            
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="font-weight-bold">KURIR PENGIRIMAN</label>
@@ -146,8 +156,8 @@
                                     <input class="form-check-input select-courier" type="radio" name="courier" id="ongkos_kirim-jne" value="jne" checked>
                                     <label class="form-check-label font-weight-bold mr-4" for="ongkos_kirim-jne">
                                         JNE</label>
-                                    <input class="form-check-input select-courier" type="radio" name="courier" id="ongkos_kirim-tiki" value="tiki">
-                                    <label class="form-check-label font-weight-bold mr-4" for="ongkos_kirim-jnt">TIKI</label>
+                                        <input class="form-check-input select-courier" type="radio" name="courier" id="ongkos_kirim-tiki" value="tiki">
+                                        <label class="form-check-label font-weight-bold mr-4" for="ongkos_kirim-jnt">TIKI</label>
                                     <input class="form-check-input select-courier" type="radio" name="courier" id="ongkos_kirim-pos" value="pos">
                                     <label class="form-check-label font-weight-bold" for="ongkos_kirim-jnt">POS</label>
                                 </div>
@@ -166,12 +176,6 @@
                         </div>
 
 
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="font-weight-bold">ALAMAT LENGKAP</label>
-                                <textarea class="form-control" name="alamat" id="alamat" rows="3" placeholder="Alamat Lengkap&#10;&#10;Contoh: Perum. Griya Palem Indah, B-17 Jombang Jawa Timur 61419" required></textarea>
-                            </div>
-                        </div>
 
                         <!-- tx -->
                         <input name="no_order" value="<?= $no_order; ?>" type="hidden">
@@ -188,7 +192,7 @@
                         }
                         ?>
                         <div class="col-md-12">
-                            <button type="submit" class="btn btn-primary btn-lg btn-block">CHECKOUT</button>
+                            <button type="submit" class="btn btn-primary btn-lg btn-block" >CHECKOUT</button>
                         </div>
 
                     </div>
@@ -248,6 +252,26 @@
                 }
             });
         })
+
+        // Function to check if all inputs are filled
+        function checkInputs() {
+            let allFilled = true;
+            $('input[type="text"], input[type="number"], textarea, select').each(function() {
+                if ($(this).val() === '') {
+                    allFilled = false;
+                    return false; // break the loop
+                }
+            });
+            return allFilled;
+        }
+
+        // Initial check
+        $('.button-checkout-disable').prop('disabled', !checkInputs());
+
+        // Event listener for input changes
+        $('input[type="text"], input[type="number"], textarea, select').on('input change', function() {
+            $('.button-checkout-disable').prop('disabled', !checkInputs());
+        });
     })
 
     $(document).on("change", "input[name='cost']", function() {

@@ -16,7 +16,7 @@
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
-                    <h5>Rp. <?= number_format($sumorders_m) ?></h5>
+                    <h5>Rp. <?= number_format($sumorders_m ?? 0) ?></h5>
                 </div>
             </div>
         </div>
@@ -29,7 +29,7 @@
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
-                    <h5>Rp. <?= number_format($sumorders_y) ?></h5>
+                    <h5>Rp. <?= number_format($sumorders_y ?? 0) ?></h5>
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
                 </div>
                 <!-- Card Body -->
                 <div class="card-body">
-                    <h5>Rp. <?= number_format($sumorders) ?></h5>
+                    <h5>Rp. <?= number_format($sumorders ?? 0) ?></h5>
                 </div>
             </div>
         </div>

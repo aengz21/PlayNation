@@ -12,6 +12,7 @@ class Customer extends CI_Controller
         $this->load->model('m_customerauth');
         $this->load->model('m_orders');
         $this->load->model('m_settings');
+        $this->load->model('m_store');
         $params = array('server_key' => 'SB-Mid-server-gBzBH8USgTUaGGBIA2jIIIQr', 'production' => false);
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: PUT, GET, POST");
@@ -67,25 +68,29 @@ class Customer extends CI_Controller
                 'content' => 'customer/v_register'
             );
 
-            $this->load->view('customer/layout/wrapper', $data, false);
+            $this->load->view('customer/layout/wrapper-daftar', $data, false);
         } else {
             $data = array(
                 'nama_customer' => $this->input->post('nama_customer'),
                 'email' => $this->input->post('email'),
                 'password' => md5($this->input->post('password')),
+                'activation_token' => bin2hex(random_bytes(16)),
+                'is_active' => 0
             );
 
             $this->m_customer->register($data);
-            $this->session->set_flashdata('pesan', 'Registrasi Berhasil Silahkan Login !');
+            $this->send_activation_email($data['email'], $data['activation_token']);
+            $this->session->set_flashdata('berhasil', 'Registrasi Berhasil! Silahkan cek email Anda untuk mengaktifkan akun.');
             redirect('customer/register');
         }
     }
-
     public function login()
     {
         $this->set_validation_rules();
-        if ($this->form_validation->run()) {
+        $login_berhasil = $this->form_validation->run();
+        if ($login_berhasil) {
             $this->process_login();
+            $this->session->set_userdata('logged_in', true);
         }
         $data = array(
             'title' => 'Login Pelanggan',
@@ -93,7 +98,7 @@ class Customer extends CI_Controller
             'content' => 'customer/v_login'
         );
 
-        $this->load->view('customer/layout/wrapper', $data, false);
+        $this->load->view('customer/layout/wrapper-login', $data, false);
     }
 
     public function account()
@@ -133,7 +138,9 @@ class Customer extends CI_Controller
             $data = array(
                 'title' => 'Dashboard Pelanggan',
                 'settings' => $this->m_settings->get_data(),
-                'content' => 'customer/v_dashboard'
+                'content' => 'customer/v_dashboard',
+                'category' => $this->m_store->get_all_data_category(), // Data kategori beserta ikon
+                'brand' => $this->m_store->get_all_data_brands()
             );
     
             $this->load->view('customer/layout/wrapper', $data, false);
@@ -187,6 +194,17 @@ class Customer extends CI_Controller
     {
         $email = $this->input->post('email');
         $password = md5($this->input->post('password'));
+        
+        // Cek apakah akun aktif
+        $user = $this->m_customer->get_by_email($email);
+        if ($user) {
+            if (!$user->is_active) {
+                $this->session->set_flashdata('error', 'Akun Anda belum diaktifkan! Silakan aktifasi akun Anda.');
+                redirect('customer/login');
+            }
+        }
+
+        // Melanjutkan proses login jika akun aktif
         $this->customer_login->login($email, $password);
     }
 
@@ -200,6 +218,8 @@ class Customer extends CI_Controller
         $data = array(
             'title' => 'Pesanan Saya',
             'orders' => $this->m_orders->get_data_by_logged_id(),
+            'category' => $this->m_store->get_all_data_category(),
+            'brand' => $this->m_store->get_all_data_brands(),
             'settings' => $this->m_settings->get_data(),
             'content' => 'customer/v_my_orders'
         );
@@ -212,6 +232,8 @@ class Customer extends CI_Controller
         $data = array(
             'title' => 'Pesanan Saya',
             'details' => $this->m_orders->get_details_order($no_order),
+            'category' => $this->m_store->get_all_data_category(),
+            'brand' => $this->m_store->get_all_data_brands(),
             'settings' => $this->m_settings->get_data(),
             'content' => 'customer/v_details_order'
         );
@@ -228,6 +250,10 @@ class Customer extends CI_Controller
         $alamat = $this->input->get('alamat');
         $no_hp = $this->input->get('no_hp');
         $datakeranjang = $this->m_orders->get_details_order($no_order);
+
+        // Update status pesanan menjadi "belum dibayar"
+        $this->db->update('tbl_orders', ['status' => 0], ['no_order' => $no_order]);
+
         // Required
         $transaction_details = array(
             'order_id' => $no_order,
@@ -245,42 +271,10 @@ class Customer extends CI_Controller
             );
         }
 
-        //Include ongkir
+        // Include ongkir
         $item_details[0]['price'] += $keranjang->ongkir;
 
-        
-
-        // // Optional
-        // $item1_details = array(
-        // 	'id' => 'a1',
-        // 	'price' => (int)$grossamount,
-        // 	'quantity' => 1,
-        // 	'name' => "Apple"
-        // );
-
-        // // Optional
-        // $item2_details = array(
-        // 	'id' => 'a2',
-        // 	'price' => 290000,
-        // 	'quantity' => 2,
-        // 	'name' => "Orange"
-        // );
-
-        // // Optional
-        // $item_details = array($item1_details);
-
-        // // Optional
-        // $billing_address = array(
-        // 	'first_name'    => "Andri",
-        // 	'last_name'     => "Litani",
-        // 	'address'       => "Mangga 20",
-        // 	'city'          => "Jakarta",
-        // 	'postal_code'   => "16602",
-        // 	'phone'         => "081122334455",
-        // 	'country_code'  => 'IDN'
-        // );
-
-        // // Optional
+        // Optional
         $shipping_address = array(
             'first_name'    => $nama,
             'last_name'     => "",
@@ -291,7 +285,7 @@ class Customer extends CI_Controller
             'country_code'  => 'IDN'
         );
 
-        // // Optional
+        // Optional
         $customer_details = array(
             'first_name'    => $nama,
             'last_name'     => "",
@@ -303,8 +297,6 @@ class Customer extends CI_Controller
 
         // Data yang akan dikirim untuk request redirect_url.
         $credit_card['secure'] = true;
-        //ser save_card true to enable oneclick or 2click
-        //$credit_card['save_card'] = true;
 
         $time = time();
         $custom_expiry = array(
@@ -350,6 +342,172 @@ class Customer extends CI_Controller
         $this->m_orders->diterima($data);
         redirect('customer/details_order/'.$no_order);
     }
+
+
+public function forgot_password()
+{
+    $this->form_validation->set_rules(
+        'email', 
+        'E-mail', 
+        'required|valid_email', 
+        array(
+            'required' => '%s Harus Di Isi !',
+            'valid_email' => '%s Tidak Valid !'
+        )
+    );
+
+    if ($this->form_validation->run() == FALSE) {
+        $data = array(
+            'title' => 'Lupa Password',
+            'settings' => $this->m_settings->get_data(),
+            'category' => $this->m_store->get_all_data_category(),
+            'brand' => $this->m_store->get_all_data_brands(),
+            'content' => 'customer/v_forgot_password'
+        );
+
+        $this->load->view('customer/layout/wrapper', $data, false);
+    } else {
+        $email = $this->input->post('email');
+        $user = $this->m_customer->get_by_email($email);
+
+        if ($user) {
+            $token = bin2hex(random_bytes(50)); // generate random token
+            $this->m_customer->set_password_reset_token($user->id_customer, $token);
+
+            // Kirim email dengan link reset password
+            $reset_link = base_url('customer/reset_password?token=' . $token);
+            $this->send_reset_email($email, $reset_link);
+
+            $this->session->set_flashdata('pesan', 'Link reset password sudah dikirim ke email Anda!');
+        } else {
+            $this->session->set_flashdata('pesan', 'Email tidak ditemukan!');
+        }
+        redirect('customer/forgot_password');
+    }
+}
+
+public function reset_password()
+{
+    $token = $this->input->get('token');
+    $user = $this->m_customer->get_by_reset_token($token);
+
+    if (!$user) {
+        $this->session->set_flashdata('pesan', 'Token tidak valid atau sudah kadaluarsa!');
+        redirect('customer/login');
+    }
+
+    $this->form_validation->set_rules(
+        'new_password', 
+        'Password Baru', 
+        'required|min_length[8]',
+        array(
+            'required' => '%s Harus Di Isi !',
+            'min_length' => '%s Minimal 8 Karakter'
+        )
+    );
+
+    $this->form_validation->set_rules(
+        'confirm_password', 
+        'Konfirmasi Password', 
+        'required|matches[new_password]',
+        array(
+            'required' => '%s Harus Di Isi !',
+            'matches' => '%s Tidak Sama'
+        )
+    );
+
+    if ($this->form_validation->run() == FALSE) {
+        $data = array(
+            'title' => 'Reset Password',
+            'settings' => $this->m_settings->get_data(),
+            'content' => 'customer/v_reset_password'
+        );
+
+        $this->load->view('customer/layout/wrapper', $data, false);
+    } else {
+        $new_password = md5($this->input->post('new_password'));
+        $this->m_customer->update_password(array('id_customer' => $user->id_customer, 'password' => $new_password));
+        $this->m_customer->clear_password_reset_token($user->id_customer);
+        
+        $this->session->set_flashdata('berhasil', 'Password berhasil direset! Silahkan login.');
+        redirect('customer/login');
+    }
+}
+
+private function send_reset_email($email, $reset_link)
+{
+    // Konfigurasi dan kirim email di sini
+    $this->load->library('email');
+    $this->email->from('satrioangga350@gmail.com', 'Playnation'); // Ganti dengan alamat Gmail Anda
+    $this->email->to($email);
+    $this->email->subject('Permintaan Reset Password Anda');
+    $this->email->message("
+    <center>
+        <h2 style='font-size: 20px; font-weight: bold;'>Permintaan Reset Password</h2>
+        <p style='font-size: 16px;'>Halo,</p>
+        <p style='font-size: 16px;'>Kami menerima permintaan untuk mereset password akun Anda di Playnation. Jika Anda tidak merasa melakukan permintaan ini, silakan abaikan email ini.</p>
+        <p style='font-size: 16px;'>Untuk mereset password Anda, silakan klik tautan di bawah ini:</p>
+        <p style='font-size: 16px;'><a href='$reset_link' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Reset Password</a></p>
+        <p style='font-size: 16px;'>Terima kasih,<br>Tim Playnation</p>
+    </center>
+    ");
+    if ($this->email->send()) {
+        return true; // Email berhasil dikirim
+    } else {
+        log_message('error', $this->email->print_debugger()); // Log error jika pengiriman gagal
+        return false;
+    }
+}
+
+private function send_activation_email($email, $token)
+{
+    $activation_link = base_url('customer/activate?token=' . $token);
+    $this->load->library('email');
+    $this->email->from('satrioangga350@gmail.com', 'Playnation');
+    $this->email->to($email);
+    $this->email->subject('Aktivasi Akun Anda');
+    $this->email->message("<center>
+        <h2>Selamat Datang di Playnation!</h2>
+        <p>Terima kasih telah mendaftar. Untuk mengaktifkan akun Anda, silakan klik tautan di bawah ini:</p>
+        <p><a href='$activation_link' style='background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Aktivasi Akun Anda</a></p>
+        <p>Jika Anda tidak mendaftar, abaikan email ini.</p>
+        <p>Terima kasih,<br>Tim Playnation</p>
+    </center>");
+    $this->email->send();
+}
+
+public function activate()
+{
+    $token = $this->input->get('token');
+    $user = $this->m_customer->get_by_activation_token($token);
+
+    if ($user) {
+        $this->m_customer->activate_account($user->id_customer);
+        $this->session->set_flashdata('berhasil', 'Akun Anda berhasil diaktifkan! Silahkan login.');
+        redirect('customer/login');
+    } else {
+        $this->session->set_flashdata('pesan', 'Token aktivasi tidak valid atau sudah kadaluarsa!');
+        redirect('customer/login');
+    }
+}
+
+public function pay_order($no_order)
+{
+    // Ambil data pesanan berdasarkan nomor pesanan
+    $order = $this->m_orders->get_order_by_no($no_order);
+
+    // Periksa apakah status pesanan adalah "belum dibayar"
+    if ($order && $order->status == 0) {
+        // Redirect ke metode token untuk memproses pembayaran
+        redirect('customer/token?no_order=' . $no_order . '&grossamount=' . $order->gross_amount . '&nama=' . $order->nama . '&alamat=' . $order->alamat . '&no_hp=' . $order->no_hp);
+    } else {
+        // Jika status bukan "belum dibayar", tampilkan pesan kesalahan atau lakukan tindakan lain
+        $this->session->set_flashdata('error', 'Pesanan tidak dapat diproses atau sudah dibayar.');
+        redirect('customer/my_orders');
+    }
+}
+
+
 }
 
 /* End of file Customer.php */

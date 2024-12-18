@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
-    <link rel="icon" type="image/x-icon" href="<?= base_url() ?>assets/favicon/Ikon.png" />
+    <link rel="icon" type="image/x-icon" href="<?= base_url() ?>assets/favicon/ikon.png" />
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&display=swap');
@@ -79,6 +79,9 @@
         }
 
         .header-main{
+            background-color: #333333;
+        }
+        .navbar {
             background-color: #333333;
         }
 

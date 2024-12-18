@@ -33,7 +33,6 @@
                         <tr>
                             <th>NO</th>
                             <th>kategori</th>
-                            <th>Icon</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -43,7 +42,6 @@
                             <tr>
                                 <td><?= $key + 1; ?></td>
                                 <td><?= $value->kategori; ?></td>
-                                <td><?= $value->icon ?></td>
                                 <td>
                                     <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#edit<?= $value->id ?>"><i class="fas fa-edit"></i></button>
                                     <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#delete<?= $value->id ?>"><i class="fas fa-trash"></i></button>

@@ -28,9 +28,11 @@
                             <th>NO</th>
                             <th>Nama</th>
                             <th>kategori</th>
+                            <th>Brand</th>
                             <th>Harga</th>
                             <th>Berat</th>
                             <th>Diskon</th>
+                            <th>Stok</th>
                             <th>Foto</th>
                             <th>Action</th>
                         </tr>
@@ -42,6 +44,7 @@
                                 <td><?= $key + 1; ?></td>
                                 <td><?= $value->title; ?></td>
                                 <td><?= $value->kategori; ?></td>
+                                <td><?= $value->brands; ?></td>
                                 <td>Rp. <?= number_format($value->price - ($value->price * $value->discount) / 100);  ?></td>
                                 <td><?= number_format($value->weight / 1000, 2); ?> KG</td>
                                 <td><?php if ($value->discount > 0) {
@@ -49,6 +52,7 @@
                                     } else {
                                         echo 'Tidak Diskon';
                                     } ?></td>
+                                    <td><?= $value->stock ?> </td>
                                 <td><?= $value->img ?></td>
                                 <td>
                                     <a class="btn btn-sm btn-warning" href="<?= base_url('products/update/'.$value->id_product) ?>"><i class="fas fa-edit"></i></a>
