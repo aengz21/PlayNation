@@ -121,9 +121,13 @@ class Snap extends CI_Controller
 			$result = json_decode($result_data);
 			
 			if ($result) {
+				// Ambil email dari sesi pengguna
+				$email = $this->session->userdata('email'); // Pastikan 'email' ada di sesi
+
 				echo 'RESULT <br><pre>';
 				echo 'Order ID: ' . $result->order_id . '<br>';
 				echo 'Nama Pembeli: ' . $result->customer_details->first_name . ' ' . $result->customer_details->last_name . '<br>';
+				echo 'Email Pembeli: ' . $email . '<br>'; // Tampilkan email pembeli
 				echo 'Items: <br>';
 				foreach ($result->item_details as $item) {
 					echo '- ' . $item->name . ' (Qty: ' . $item->quantity . ')<br>';

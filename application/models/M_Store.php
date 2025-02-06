@@ -115,6 +115,20 @@ class M_store extends CI_Model
         $this->db->where('id_product', $id_product);
         return $this->db->update('tbl_products');
     }
+
+    public function add_comment($data)
+    {
+        $this->db->insert('tbl_comments', $data);
+    }
+
+    public function get_comments_by_product($id_product)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_comments');
+        $this->db->where('id_product', $id_product);
+        $this->db->order_by('created_at', 'desc'); // Urutkan berdasarkan waktu pembuatan
+        return $this->db->get()->result();
+    }
 }
 
 /* End of file M_store.php */

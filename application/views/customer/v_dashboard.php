@@ -12,7 +12,13 @@ echo validation_errors('<div class="alert alert-light alert-dismissible m-2">
                     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                     <h5>Alert!</h5>', '</div>');
 ?>
-<div class="container-fluid mb-5 mt-4">
+<style>
+    /* Tambahkan padding-top pada konten utama */
+    .conten {
+        padding-top: 90px; /* Sesuaikan dengan tinggi header */
+    }
+</style>
+<div class="container-fluid mb-5 mt-4 conten">
     <div class="row">
         <div class="col-md-3 mb-4">
             <div class="card border-0 rounded shadow">

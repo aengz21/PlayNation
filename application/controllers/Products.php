@@ -146,34 +146,17 @@ class Products extends CI_Controller
         // Ambil data lama dari database
         $product = $this->m_products->get_data($id_product);
 
-        // Jika upload gambar baru dilakukan
-        if ($this->upload->do_upload($field_name)) {
-            // Jika ada gambar lama, hapus
-            if ($product->img != "") {
-                unlink('./assets/products_img/' . $product->img);
-            }
-            $upload_data = array('uploads' => $this->upload->data());
-            $config['image_library'] = 'gd2';
-            $config['source_image'] = './assets/products_img/' . $upload_data['uploads']['file_name'];
-            $this->load->library('image_lib', $config);
-            $img = $upload_data['uploads']['file_name'];
-        } else {
-            // Jika gambar tidak diupload, tetap gunakan gambar yang lama
-            $img = $product->img;
-        }
-
         // Periksa apakah input kosong, jika ya gunakan data lama
         $data = array(
             'id_product' => $id_product,
-            'title' => $this->input->post('title') ? $this->input->post('title') : $product->title,
-            'id_category' => $this->input->post('kategori') ? $this->input->post('kategori') : $product->id_category,
-            'id_brand' => $this->input->post('brand') ? $this->input->post('brand') : $product->id_brand,
-            'price' => $this->input->post('price') ? $this->input->post('price') : $product->price,
-            'weight' => $this->input->post('weight') ? $this->input->post('weight') : $product->weight,
-            'discount' => $this->input->post('discount') ? $this->input->post('discount') : $product->discount,
-            'stock' => $this->input->post('stok') ? $this->input->post('stok') : $product->stock,
-            'description' => $this->input->post('description') ? $this->input->post('description') : $product->description,
-            'img' => $img,
+            'title' => $this->input->post('title') ?: $product->title,
+            'id_category' => $this->input->post('kategori') ?: $product->id_category,
+            'id_brand' => $this->input->post('brand') ?: $product->id_brand,
+            'price' => $this->input->post('price') ?: $product->price,
+            'weight' => $this->input->post('weight') ?: $product->weight,
+            'discount' => $this->input->post('discount') ?: $product->discount,
+            'stock' => $this->input->post('stok') ?: $product->stock,
+            'description' => $this->input->post('description') ?: $product->description,
         );
 
         $this->m_products->update($data);

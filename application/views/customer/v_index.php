@@ -41,6 +41,9 @@
         @media (max-width: 1200px) { .product-card { flex: 1 1 calc(33.33% - 20px); } }
         @media (max-width: 768px) { .side-menu { width: 100%; margin-bottom: 20px; } .product-card { flex: 1 1 calc(50% - 20px); } }
         @media (max-width: 480px) { .product-card { flex: 1 1 100%; } }
+        .carousel {
+            margin-top: 50px; /* Sesuaikan dengan tinggi header */
+        }
     </style>
 
 </head>

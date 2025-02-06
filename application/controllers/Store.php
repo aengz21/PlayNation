@@ -81,6 +81,7 @@ class Store extends Sekai_Controller
             'product' => $this->m_store->detail_product($id_product),
             'category' => $this->m_store->get_all_data_category(),
             'brand' => $this->m_store->get_all_data_brands(),
+            'comments' => $this->m_store->get_comments_by_product($id_product),
             'content' => 'customer/v_detail'
         );
         $this->load->view('customer/layout/wrapper', $data, false);

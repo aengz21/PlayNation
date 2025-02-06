@@ -1,4 +1,11 @@
-<div class="container-fluid mb-5 mt-4">
+<style>
+    /* Tambahkan padding-top pada konten utama */
+    .conten {
+        padding-top: 90px; /* Sesuaikan dengan tinggi header */
+    }
+</style>
+
+<div class="container-fluid mb-5 mt-4 conten">
     <div class="row">
         <div class="col-md-12">
             <h4 class="font-weight-bold"><i class="fa fa-shopping-bag"></i> <?= $title; ?></h4>

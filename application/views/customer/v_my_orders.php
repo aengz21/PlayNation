@@ -7,7 +7,15 @@ if ($this->session->flashdata('pesan')) {
     echo '</div>';
 }
 ?>
-<div class="container-fluid mb-5 mt-4">
+<head>
+<style>
+    /* Tambahkan padding-top pada konten utama */
+    .conten {
+        padding-top: 90px; /* Sesuaikan dengan tinggi header */
+    }
+</style>
+</head>
+<div class="container-fluid mb-5 mt-4 conten">
     <div class="row">
         <div class="col-md-3 mb-4">
             <div class="card border-0 rounded shadow">

@@ -22,11 +22,6 @@
                         <h5><i class="icon fas fa-info"></i>' . $error_upload . '</h5> </div>';
                     }
                     echo form_open_multipart('products/update/' . $product->id_product) ?>
-
-                        <div class="form-group">
-                            <label>GAMBAR</label>
-                            <input type="file" name="img" class="form-control" >
-                        </div>
                         
                         <div class="form-group">
                             <label>NAMA PRODUK</label>

@@ -13,7 +13,7 @@ class Customer extends CI_Controller
         $this->load->model('m_orders');
         $this->load->model('m_settings');
         $this->load->model('m_store');
-        $params = array('server_key' => 'SB-Mid-server-gBzBH8USgTUaGGBIA2jIIIQr', 'production' => false);
+        $params = array('server_key' => 'SB-Mid-server-oSm60e409Hpy2faZ-s1XPXtd', 'production' => false);
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: PUT, GET, POST");
         header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -195,17 +195,21 @@ class Customer extends CI_Controller
         $email = $this->input->post('email');
         $password = md5($this->input->post('password'));
         
-        // Cek apakah akun aktif
         $user = $this->m_customer->get_by_email($email);
-        if ($user) {
+        if ($user && $user->password === $password) {
             if (!$user->is_active) {
                 $this->session->set_flashdata('error', 'Akun Anda belum diaktifkan! Silakan aktifasi akun Anda.');
                 redirect('customer/login');
+            } else {
+                $this->session->set_userdata('logged_in', true);
+                $this->session->set_userdata('id_customer', $user->id_customer);
+                $this->session->set_userdata('email', $user->email);
+                redirect('store');
             }
+        } else {
+            $this->session->set_flashdata('error', 'Email atau password salah!');
+            redirect('customer/login');
         }
-
-        // Melanjutkan proses login jika akun aktif
-        $this->customer_login->login($email, $password);
     }
 
     public function logout()
@@ -249,7 +253,10 @@ class Customer extends CI_Controller
         $nama = $this->input->get('nama');
         $alamat = $this->input->get('alamat');
         $no_hp = $this->input->get('no_hp');
+        $kota = $this->input->get('kota');
+        $provinsi = $this->input->get('provinsi');
         $datakeranjang = $this->m_orders->get_details_order($no_order);
+        
 
         // Update status pesanan menjadi "belum dibayar"
         $this->db->update('tbl_orders', ['status' => 0], ['no_order' => $no_order]);
@@ -279,17 +286,21 @@ class Customer extends CI_Controller
             'first_name'    => $nama,
             'last_name'     => "",
             'address'       => $alamat,
-            'city'          => "",
+            'city'          => $kota,
+            'province'      => $provinsi,
             'postal_code'   => "",
             'phone'         => $no_hp,
             'country_code'  => 'IDN'
         );
 
+        // Mengambil email dari sesi pengguna yang sudah login
+        $email = $this->session->userdata('email'); // Pastikan email disimpan di sesi saat login
+
         // Optional
         $customer_details = array(
             'first_name'    => $nama,
             'last_name'     => "",
-            'email'         => "yangbeli@beligadget.com",
+            'email'         => $email, // Menggunakan email pengguna yang sudah login
             'phone'         => $no_hp,
             'billing_address'  => $shipping_address,
             'shipping_address' => $shipping_address
@@ -506,6 +517,24 @@ public function pay_order($no_order)
         redirect('customer/my_orders');
     }
 }
+
+// public function add_comment()
+// {
+//     if (!$this->session->userdata('logged_in')) {
+//         redirect('customer/login');
+//     }
+
+//     $data = array(
+//         'id_product' => $this->input->post('id_product'),
+//         'user_name' => $this->session->userdata('email'), // Atau gunakan nama pengguna jika tersedia
+//         'comment' => $this->input->post('comment'),
+//         'rating' => $this->input->post('rating')
+//     );
+
+//     $this->m_store->add_comment($data);
+//     $this->session->set_flashdata('pesan', 'Komentar berhasil ditambahkan!');
+//     redirect('store/detail_product/' . $data['id_product']);
+// }
 
 
 }

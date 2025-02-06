@@ -2,7 +2,13 @@
     <input type="hidden" name="result_type" id="result-type" value=""></div>
     <input type="hidden" name="result_data" id="result-data" value=""></div>
 </form>
-<div class="container-fluid mb-5 mt-4">
+<style>
+    /* Tambahkan padding-top pada konten utama */
+    .conten {
+        padding-top: 90px; /* Sesuaikan dengan tinggi header */
+    }
+</style>
+<div class="container-fluid mb-5 mt-4 conten">
     <div class="row">
         <div class="col-md-3 mb-4">
             <div class="card border-0 rounded shadow">
@@ -203,7 +209,7 @@
     <!-- /.modal -->
 </div>
 
-<script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-wa-wyKb-Pv2vsXiG"></script>
+<script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-n_DRXjV9g_32CV9S"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
 <script type="text/javascript">

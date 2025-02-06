@@ -73,7 +73,7 @@
         <div class="col-md-12">
             <div class="card border-0 rounded shadow-lg" style="background-color: #fff;">
                 <div class="card-body">
-                    <h3 class="font-weight-bold text-primary">KETERANGAN</h3>
+                    <h3 class="font-weight-bold text-primary no-strike">KETERANGAN</h3>
                     <hr>
                     <div class="ket" style="font-size: 1.2rem; line-height: 1.7; color: #34495e;">
                         <?= $product->description; ?>
@@ -82,6 +82,50 @@
             </div>
         </div>
     </div>
+    <!-- <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card border-0 rounded shadow-lg" style="background-color: #fff;">
+                <div class="card-body">
+                    <h3 class="font-weight-bold text-primary">KOMENTAR</h3>
+                    <hr>
+                    <div class="comments" style="font-size: 1.2rem; line-height: 1.7; color: #34495e;">
+                        <?php if ($this->session->userdata('logged_in')): ?>
+                            <form action="<?= base_url('customer/add_comment'); ?>" method="post">
+                                <input type="hidden" name="id_product" value="<?= $product->id_product; ?>">
+                                <div class="form-group">
+                                    <label for="comment">Komentar:</label>
+                                    <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rating">Rating:</label>
+                                    <select class="form-control" id="rating" name="rating" required>
+                                        <option value="1">1 - Sangat Buruk</option>
+                                        <option value="2">2 - Buruk</option>
+                                        <option value="3">3 - Cukup</option>
+                                        <option value="4">4 - Baik</option>
+                                        <option value="5">5 - Sangat Baik</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Kirim</button>
+                            </form>
+                        <?php else: ?>
+                            <p class="text-danger">Silakan <a href="<?= base_url('customer/login'); ?>">login</a> untuk memberikan ulasan.</p>
+                        <?php endif; ?>
+
+                        <div class="existing-comments">
+                            <h4>Komentar dan Rating yang Sudah Diberikan:</h4>
+                            <?php foreach ($comments as $comment): ?>
+                                <div class="comment">
+                                    <p><strong><?= $comment->user_name; ?>:</strong> <?= $comment->comment; ?></p>
+                                    <p>Rating: <?= $comment->rating; ?>/5</p>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
     <?php echo form_close(); ?>
 </div>
 
@@ -95,6 +139,9 @@
     }
     .zoom-container:hover img {
         transform: scale(1.1); /* Zoom effect */
+    }
+    .conten {
+        padding-top: 90px; /* Sesuaikan dengan tinggi header */
     }
 </style>
 

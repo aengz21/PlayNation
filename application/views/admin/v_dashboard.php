@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid main-content" style="margin-top: 60px;">
     <!-- Page Heading -->
 
 
@@ -109,3 +109,11 @@
         </div>
     </div>
 </div>
+
+<style>
+@media (max-width: 768px) {
+    .main-content {
+        margin-top: 120px; /* Sesuaikan untuk tampilan mobile */
+    }
+}
+</style>

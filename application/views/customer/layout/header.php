@@ -31,8 +31,8 @@
             transition: background-color 0.3s ease;
         }
         .dropdown:hover .dropdown-menu {
-    display: block;
-}
+            display: block;
+        }
 
         .dropdown-item:hover {
             background-color: #555555;
@@ -74,6 +74,19 @@
             margin-right: 20px; /* Jarak antara logo dan teks */
             margin-left: 20px;
         }
+
+        /* Tambahkan CSS berikut untuk membuat header tetap */
+        .section-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        /* Tambahkan padding-top pada body untuk menghindari konten tertutup header */
+        body {
+            padding-top: 100px; /* Sesuaikan dengan tinggi header */
+        }
     </style>
 </head>
 <body>
@@ -104,7 +117,7 @@
                     <!-- Cart and Account -->
                     <div class="col-md-4 col-5">
                         <div class="d-flex justify-content-end">
-                            <?php 
+                            <?php   
                             $keranjang = $this->cart->contents();
                             $item = 0;
                             $total = 0;
@@ -151,13 +164,13 @@
                                         Shop All
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="shopAllDropdown">
-                                    <div class="row">
+                                        <div class="row">
                                             <div class="col-md-4 dropdown-section">
                                                 <h6 class="dropdown-header">Categories</h6>
                                                 <?php foreach ($category as $cat) { ?>
-                                                 <a class="dropdown-item" href="<?= base_url('store/kategori/' . $cat->id); ?>">
-                                                <?= $cat->kategori; ?>
-                                                 </a>
+                                                    <a class="dropdown-item" href="<?= base_url('store/kategori/' . $cat->id); ?>">
+                                                        <?= $cat->kategori; ?>
+                                                    </a>
                                                 <?php } ?>
                                             </div>
                                             <div class="col-md-4 dropdown-section">
@@ -166,7 +179,7 @@
                                                     <a class="dropdown-item" href="<?= base_url('store/brands/' . $br->id); ?>">
                                                         <?= $br->brands; ?>
                                                     </a>
-                                               <?php } ?>
+                                                <?php } ?>
                                             </div>
                                             <div class="col-md-4 dropdown-section">
                                                 <h6 class="dropdown-header">ACCESSORIES</h6>
@@ -179,9 +192,6 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="<?= base_url('store/promo') ?>" style="color: #ffffff;">Promo</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="<?= base_url('minibanner/index') ?>" style="color: #ffffff;">Category</a>
                                 </li>
                             </ul>
                         </div>

@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 <hr>
-                © <strong>PlayNation</strong> 2024 •
+                © <strong>PlayNation</strong> <?= date('Y') ?> •
             </div>
         </div>
     </div>

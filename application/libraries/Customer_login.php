@@ -43,7 +43,8 @@ class Customer_login
     public function logout(){
         $this->ci->session->unset_userdata('email');
         $this->ci->session->unset_userdata('nama_customer');
-        $this->ci->session->unset_userdata('id_customer', $id);
+        $this->ci->session->unset_userdata('id_customer');
+        $this->ci->session->unset_userdata('logged_in');
         $this->ci->session->set_flashdata('pesan', 'Anda Berhasil Logout !');
         redirect('store'); 
     }
