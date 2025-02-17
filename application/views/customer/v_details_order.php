@@ -99,17 +99,59 @@
                             </td>
                             <td>:</td>
                             <td>
-                                <?php if ($details[0]->status == 0) { ?>
-                                    <button id="pay-button" data-nama="<?= $details[0]->nama_penerima ?>" data-alamat="<?= $details[0]->alamat ?>" data-no_hp="<?= $details[0]->no_telp ?>" data-no_order="<?= $details[0]->no_order ?>" data-amount="<?= $details[0]->total_bayar ?>" class="btn btn-primary">BAYAR
-                                        SEKARANG</button>
-                                <?php } else if ($details[0]->status == 1) { ?>
-                                    <button class="btn btn-success">Sudah di bayar</button>
-                                <?php } else if ($details[0]->status == 2) { ?>
-                                    <button class="btn btn-success">Sedang Dikirim</button>
-                                <?php } else if ($details[0]->status == 3) { ?>
-                                    <button class="btn btn-success">Diterima</button>
-                                <?php } else if ($details[0]->status == 4) { ?>
-                                    <button class="btn btn-danger">Dibatalkan</button>
+                                <?php if (is_array($details) && isset($details[0])) { ?>
+                                    <?php if ($details[0]->status == 0) { ?>
+                                        <button id="pay-button" data-nama="<?= $details[0]->nama_penerima ?>" data-alamat="<?= $details[0]->alamat ?>" data-no_hp="<?= $details[0]->no_telp ?>" data-no_order="<?= $details[0]->no_order ?>" data-amount="<?= $details[0]->total_bayar ?>" class="btn btn-primary">BAYAR SEKARANG</button>
+                                    <?php } else if ($details[0]->status == 1) { ?>
+                                        <button class="btn btn-success">Sudah di bayar</button>
+                                    <?php } else if ($details[0]->status == 2) { ?>
+                                        <button class="btn btn-success">Sedang Diproses</button>
+                                    <?php } else if ($details[0]->status == 3) { ?>
+                                        <button class="btn btn-success">Diterima</button>
+                                        <a href="<?= base_url('store/detail_product/' . $details[0]->id_product) ?>" class="btn btn-info">Beri Ulasan</a>
+                                        <button class="btn btn-warning" data-toggle="modal" data-target="#ulasanModal<?= $details[0]->id_order ?>">Beri Ulasan</button>
+                                        <!-- Modal Ulasan -->
+                                        <div class="modal fade" id="ulasanModal<?= $details[0]->id_order ?>">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Ulasan untuk <?= $details[0]->product_name; ?></h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="<?= site_url('customer/submit_review') ?>" method="post">
+                                                            <input type="hidden" name="no_order" value="<?= $details[0]->no_order ?>">
+                                                            <input type="hidden" name="id_product" value="<?= $details[0]->id_product ?>">
+                                                            <div class="form-group">
+                                                                <label for="rating">Rating:</label>
+                                                                <select name="rating" class="form-control" required>
+                                                                    <option value="1">1</option>
+                                                                    <option value="2">2</option>
+                                                                    <option value="3">3</option>
+                                                                    <option value="4">4</option>
+                                                                    <option value="5">5</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="comment">Komentar:</label>
+                                                                <textarea name="comment" class="form-control" rows="3" required></textarea>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-light" data-dismiss="modal">Batal</button>
+                                                                <button type="submit" class="btn btn-primary">Kirim Ulasan</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php } else if ($details[0]->status == 4) { ?>
+                                        <button class="btn btn-danger">Belum di Bayar</button>
+                                    <?php } ?>
+                                <?php } else { ?>
+                                    <td colspan="3">Data tidak ditemukan.</td>
                                 <?php } ?>
                             </td>
                         </tr>
@@ -135,6 +177,12 @@
                             </td>
                         </tr>
                         <?php } ?>
+                        <tr>
+                            <td>
+                                <!-- Tombol untuk mencetak resi -->
+                                <a href="<?= site_url('customer/exportpdf/' . $details[0]->no_order) ?>" class="btn btn-secondary">Cetak Resi</a>
+                            </td>
+                        </tr>
                     </table>
                 </div>
             </div>

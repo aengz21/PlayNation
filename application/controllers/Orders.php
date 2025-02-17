@@ -68,9 +68,9 @@ class Orders extends CI_Controller
             'title' => 'Pesanan Saya',
             'details' => $this->m_orders->get_details_order($no_order),
             'content' => 'customer/v_details_order'
-        );
+        );  
         $sroot      = $_SERVER['DOCUMENT_ROOT'];
-        include $sroot . "/beligadget/application/third_party/dompdf/autoload.inc.php";
+        include $sroot . "/playnation/application/third_party/dompdf/autoload.inc.php";
         $dompdf = new Dompdf\Dompdf();
 
         $this->load->view('invoice/invoice-pdf', $data);

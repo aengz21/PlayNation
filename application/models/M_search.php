@@ -4,13 +4,20 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 class M_search extends CI_Model
 {
-    public function searchProducts($search_title)
+    public function searchProducts($title, $min_price = null, $max_price = null)
     {
-        // Add more conditions as needed
-        $this->db->like('title', $search_title);
-        $query = $this->db->get('tbl_products');
-
-        return $query->result();
+        $this->db->select('*');
+        $this->db->from('tbl_products');
+        if ($title) {
+            $this->db->like('title', $title);
+        }
+        if ($min_price) {
+            $this->db->where('price >=', $min_price);
+        }
+        if ($max_price) {
+            $this->db->where('price <=', $max_price);
+        }
+        return $this->db->get()->result();
     }
 }
 

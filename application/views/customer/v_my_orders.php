@@ -24,7 +24,8 @@ if ($this->session->flashdata('pesan')) {
                     <hr>
                     <ul class="list-group">
                         <a href="<?= base_url('customer/account') ?>" class="list-group-item text-decoration-none text-dark text-uppercase"><i class="fas fa-user-circle"></i> Account</a>
-                        <a href="<?= base_url('customer/my_orders') ?>" class="list-group-item text-decoration-none text-dark text-uppercase"><i class="fas fa-shopping-cart"></i> My Order</a>
+                        <a href="<?= base_url('customer/my_orders') ?>" class="list-group-item text-decoration-none text-dark text-uppercase active"><i class="fas fa-shopping-cart"></i> My Order</a>
+                        <a href="<?= base_url('customer/wishlist') ?>" class="list-group-item text-decoration-none text-dark text-uppercase "><i class="fas fa-heart"></i> Wishlist</a>
                         <a href="<?= base_url('customer/logout') ?>" style="cursor:pointer" class="list-group-item text-decoration-none text-dark text-uppercase"><i class="fas fa-sign-out-alt"></i> Logout</a>
                     </ul>
                 </div>
@@ -42,6 +43,7 @@ if ($this->session->flashdata('pesan')) {
                                 <th scope="col">FULL NAME</th>
                                 <th scope="col">SHIPPING</th>
                                 <th scope="col">GRAND TOTAL</th>
+                                <th scope="col">STATUS</th>
                                 <th scope="col">OPTIONS</th>
                             </tr>
                         </thead>
@@ -53,6 +55,26 @@ if ($this->session->flashdata('pesan')) {
                                 <td><?= $value->nama_penerima; ?></td>
                                 <td><?= strtoupper($value->courier) . ' | ' . $value->layanan_courier . ' | Rp. ' . number_format($value->ongkir) ?></td>
                                 <td>Rp. <?= number_format($value->total_bayar) ?></td>
+                                <td>
+                                    <?php 
+                                    switch ($value->status) {
+                                        case 1:
+                                            echo 'Sudah Dibayar';
+                                            break;
+                                        case 2:
+                                            echo 'Sedang Diproses';
+                                            break;
+                                        case 3:
+                                            echo 'Diterima';
+                                            break;
+                                        case 4:
+                                            echo 'Belum Dibayar';
+                                            break;
+                                        default:
+                                            echo 'Status Tidak Diketahui';
+                                    }
+                                    ?>
+                                </td>
                                 <td class="text-center">
                                     <a href="<?= base_url('customer/details_order/'.$value->no_order) ?>" class="btn btn-sm btn-primary">DETAIL</a>
                                 </td>

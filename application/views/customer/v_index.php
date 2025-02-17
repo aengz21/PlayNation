@@ -44,6 +44,56 @@
         .carousel {
             margin-top: 50px; /* Sesuaikan dengan tinggi header */
         }
+        .wishlist-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 50%;
+        padding: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    .text-red {
+        color: red;
+    }
+
+    .wishlist-btn i {
+        color: gray;
+        font-size: 16px;
+    }
+
+    .wishlist-btn:hover {
+        background-color: red;
+    }
+
+    .wishlist-btn:hover i {
+        color: white;
+    }
+
+    /* Tooltip */
+    .wishlist-btn .tooltip-text {
+        visibility: hidden;
+        background-color: black;
+        color: white;
+        text-align: center;
+        padding: 5px 8px;
+        border-radius: 4px;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        font-size: 12px;
+    }
+
+    .wishlist-btn:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
     </style>
 
 </head>
@@ -80,11 +130,12 @@
                 </div>
             </div>
 
+            <?php $is_logged_in = isset($_SESSION['id_customer']); ?>
             <!-- Promo Products Section -->
                <!-- Produk Terbaru -->
                <div class="col-md-9">
-                <h4 class="font-weight-bold"><i class="fa fa-shopping-bag"></i> PRODUK TERBARU</h4>
-                <hr style="border-top: 5px solid rgb(154 155 156);border-radius:.5rem">
+            <h4 class="font-weight-bold"><i class="fa fa-shopping-bag"></i> PRODUK TERBARU</h4>
+            <hr style="border-top: 5px solid rgb(154 155 156);border-radius:.5rem">
                 
                 <div class="row">
                     <?php foreach ($product as $key => $value) { ?>
@@ -107,6 +158,9 @@
                                     <?php } ?>
                                     
                                     <img src="<?= base_url('assets/products_img/' . $value->img); ?>" class="img-fluid">
+                                    <button class="wishlist-btn fa fa-heart" data-id="<?= $value->id_product ?>">
+
+                        </button>
                                 </div>
                                 
                                 <!-- Informasi Produk -->
@@ -138,6 +192,8 @@
                                    class="btn btn-primary btn-md shadow-md lihat-produk mt-3">
                                    LIHAT PRODUK
                                 </a>
+
+                                
                             </div>
                         </div>
                     <?php } ?>
@@ -168,6 +224,7 @@
                             <!-- Gambar Produk -->
                             <div class="card-img text-center">
                                 <img src="<?= base_url('assets/products_img/' . $value->img); ?>" class="img-fluid rounded-top">
+                                <a href="<?= base_url('store/detail_product/' . $value->id_product) ?>
                             </div>
                             
                             <!-- Informasi Produk -->
@@ -216,19 +273,58 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('.product-card').hover(
-                function() {
-                    $(this).find('.lihat-produk').fadeIn(); // Munculkan tombol saat hover
-                },
-                function() {
-                    $(this).find('.lihat-produk').fadeOut(); // Sembunyikan tombol saat hover keluar
-                }
-            );
+      
+        // Klik card masuk ke detail produk
+        $(".product-card").on("click", function() {
+            var url = $(this).data("url");
+            window.location.href = url;
+        });
 
-            $('.product-card').click(function() {
-                window.location.href = $(this).data('url'); // Pindah ke detail produk saat card diklik
+        $(document).ready(function() {
+            // Cek status wishlist dan ubah warna tombol
+            $('.wishlist-btn').each(function() {
+                let id_product = $(this).data('id');
+                let button = $(this);
+                $.ajax({
+                    url: "<?= base_url('customer/check_wishlist_status') ?>",
+                    type: "POST",
+                    data: { id_product: id_product },
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.status === "in_wishlist") {
+                            button.addClass('text-red');
+                        } else {
+                            button.removeClass('text-red');
+                        }
+                    }
+                });
+            });
+
+            // Klik tombol wishlist
+            $('.wishlist-btn').on('click', function(e) {
+                e.stopPropagation(); // Mencegah event click pada card
+                let id_product = $(this).data('id');
+                let button = $(this);
+
+                $.ajax({
+                    url: "<?= base_url('customer/toggle_wishlist') ?>",
+                    type: "POST",
+                    data: { id_product: id_product },
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.status === "added") {
+                            button.addClass('text-red');
+                            alert('Produk ditambahkan ke wishlist.');
+                        } else if (response.status === "removed") {
+                            button.removeClass('text-red');
+                            alert('Produk dihapus dari wishlist.');
+                        } else if (response.status === "not_logged_in") {
+                            window.location.href = "<?= base_url('customer/login') ?>";
+                        }
+                    }
+                });
             });
         });
     </script>
+</body>
 </html>

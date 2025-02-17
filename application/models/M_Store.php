@@ -26,6 +26,13 @@ class M_store extends CI_Model
         $query = $this->db->get();
         return $query->result();
     }
+    public function get_all_data_accessories()
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_accessoris');
+        $query = $this->db->get();
+        return $query->result();
+    }
     public function get_all_promo_products() {
         $this->db->select('*');
         $this->db->from('tbl_products');
@@ -35,13 +42,7 @@ class M_store extends CI_Model
     }
 
     // Mendapatkan semua kategori dengan ikon
-    public function get_all_data_category_with_icons()
-    {
-        $this->db->select('id, kategori, icon'); // Menambahkan field 'icon'
-        $this->db->from('tbl_categories');
-        $this->db->order_by('id', 'asc');
-        return $this->db->get()->result();
-    }
+
 
     // Mendapatkan produk promo (yang memiliki diskon)
     public function get_promo_products()
@@ -95,6 +96,13 @@ class M_store extends CI_Model
         $this->db->where('id_brand', $id_brand);
         return $this->db->get()->result();
     }
+    public function get_all_product_baseonaccessories($id_accessoris)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_products');
+        $this->db->where('id_accessoris', $id_accessoris);
+        return $this->db->get()->result();
+    }
 
     // Mendapatkan detail produk
     public function detail_product($id_product)
@@ -127,6 +135,20 @@ class M_store extends CI_Model
         $this->db->from('tbl_comments');
         $this->db->where('id_product', $id_product);
         $this->db->order_by('created_at', 'desc'); // Urutkan berdasarkan waktu pembuatan
+        return $this->db->get()->result();
+    }
+
+    public function count_all_products()
+    {
+        return $this->db->count_all('tbl_products');
+    }
+
+    public function get_all_products($limit, $start)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_products');
+        $this->db->limit($limit, $start);
+        $this->db->order_by('id_product', 'desc');
         return $this->db->get()->result();
     }
 }

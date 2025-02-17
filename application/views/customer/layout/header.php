@@ -174,7 +174,7 @@
                                                 <?php } ?>
                                             </div>
                                             <div class="col-md-4 dropdown-section">
-                                                <h6 class="dropdown-header">GAMES</h6>
+                                                <h6 class="dropdown-header">brands</h6>
                                                 <?php foreach($brand as $br) { ?>
                                                     <a class="dropdown-item" href="<?= base_url('store/brands/' . $br->id); ?>">
                                                         <?= $br->brands; ?>
@@ -183,9 +183,7 @@
                                             </div>
                                             <div class="col-md-4 dropdown-section">
                                                 <h6 class="dropdown-header">ACCESSORIES</h6>
-                                                <a class="dropdown-item" href="<?= base_url('store/accessories'); ?>">All Accessories</a>
-                                                <a class="dropdown-item" href="<?= base_url('store/accessories/steering'); ?>">Steering Wheels</a>
-                                                <a class="dropdown-item" href="<?= base_url('store/accessories/chairs'); ?>">Gaming Chairs</a>
+                                               <php foreach($) ?></php>
                                             </div>
                                         </div>
                                     </div>

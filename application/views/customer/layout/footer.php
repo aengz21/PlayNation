@@ -20,9 +20,9 @@
                 <h4 class="font-weight-bold">Resources</h4>
                 <hr style="border-top: 3px solid rgb(226 232 240);border-radius:.5rem">
                 <ul class="list-unstyled">
-                    <li><a href="#" style="color: #ffffff;">How to Buy</a></li>
-                    <li><a href="#" style="color: #ffffff;">Tips & Tutorials</a></li>
-                    <li><a href="#" style="color: #ffffff;">Contact</a></li>
+                    <li><a href=<?= base_url('About/how_to_buy') ?> style="color: #ffffff;">How to Buy</a></li>
+                    <li><a href=<?= base_url('about/tutorial') ?> style="color: #ffffff;">Tips & Tutorials</a></li>
+                    <li><a href=<?= base_url('about/faq')?> style="color: #ffffff;">Faq</a></li>
                 </ul>
             </div>
             <div class="col-md-4 mb-4">

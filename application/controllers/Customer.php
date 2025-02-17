@@ -9,6 +9,7 @@ class Customer extends CI_Controller
     {
         parent::__construct();
         $this->load->model('m_customer');
+        $this->load->model('M_wishlist');
         $this->load->model('m_customerauth');
         $this->load->model('m_orders');
         $this->load->model('m_settings');
@@ -219,9 +220,12 @@ class Customer extends CI_Controller
 
     public function my_orders()
     {
+        $status = $this->input->get('status');
+        $search = $this->input->get('search');
+
         $data = array(
             'title' => 'Pesanan Saya',
-            'orders' => $this->m_orders->get_data_by_logged_id(),
+            'orders' => $this->m_orders->get_filtered_orders($status, $search),
             'category' => $this->m_store->get_all_data_category(),
             'brand' => $this->m_store->get_all_data_brands(),
             'settings' => $this->m_settings->get_data(),
@@ -518,24 +522,127 @@ public function pay_order($no_order)
     }
 }
 
-// public function add_comment()
-// {
-//     if (!$this->session->userdata('logged_in')) {
-//         redirect('customer/login');
-//     }
 
-//     $data = array(
-//         'id_product' => $this->input->post('id_product'),
-//         'user_name' => $this->session->userdata('email'), // Atau gunakan nama pengguna jika tersedia
-//         'comment' => $this->input->post('comment'),
-//         'rating' => $this->input->post('rating')
-//     );
+public function wishlist()
+{
+    $id_customer = $this ->session->userdata('id_customer');
+    $data = array(
+        'title' => 'Wishlist Saya',
+        'wishlist' => $this->M_wishlist->get_wishlist($id_customer),
+        'category' => $this->m_store->get_all_data_category(),
+        'brand' => $this->m_store->get_all_data_brands(),
+        'settings' => $this->m_settings->get_data(),
+        'content' => 'customer/v_wishlist'
+    );
 
-//     $this->m_store->add_comment($data);
-//     $this->session->set_flashdata('pesan', 'Komentar berhasil ditambahkan!');
-//     redirect('store/detail_product/' . $data['id_product']);
-// }
+    $this->load->view('customer/layout/wrapper', $data);
+}
+public function add_wishlist()
+{
+    $id_customer = $this->session->userdata('id_customer');
+    $id_product = $this->input->post('id_product');
 
+    log_message('debug', "Add to wishlist: Customer ID = $id_customer, Product ID = $id_product");
+
+    // Cek apakah produk sudah ada di wishlist
+    if (!$this->M_wishlist->check_wishlist($id_customer, $id_product)) {
+        $data = [
+            'id_customer' => $id_customer,
+            'id_product' => $id_product
+        ];
+        $this->M_wishlist->add_to_wishlist($data);
+        $this->session->set_flashdata('success', 'Produk ditambahkan ke wishlist.');
+    } else {
+        $this->session->set_flashdata('error', 'Produk sudah ada di wishlist Anda.');
+    }
+}
+
+public function remove_wishlist()
+{
+    $id_customer = $this->session->userdata('id_customer');
+    $id_product = $this->input->post('id_product');
+
+    log_message('debug', "Remove from wishlist: Customer ID = $id_customer, Product ID = $id_product");
+
+    $wishlist_item = $this->M_wishlist->check_wishlist($id_customer, $id_product);
+    if ($wishlist_item) {
+        $this->M_wishlist->remove_from_wishlist($wishlist_item->id_wishlist);
+        $this->session->set_flashdata('success', 'Produk dihapus dari wishlist.');
+    }
+}
+
+public function check_wishlist_status()
+{
+    $id_customer = $this->session->userdata('id_customer');
+    $id_product = $this->input->post('id_product');
+
+    if ($id_customer) {
+        $in_wishlist = $this->M_wishlist->check_wishlist($id_customer, $id_product);
+        echo json_encode(['status' => $in_wishlist ? 'in_wishlist' : 'not_in_wishlist']);
+    } else {
+        echo json_encode(['status' => 'not_logged_in']);
+    }
+}
+
+public function toggle_wishlist()
+{
+    $id_customer = $this->session->userdata('id_customer');
+    $id_product = $this->input->post('id_product');
+
+    if (!$id_customer) {
+        echo json_encode(['status' => 'not_logged_in']);
+        return;
+    }
+
+    if ($this->M_wishlist->check_wishlist($id_customer, $id_product)) {
+        $this->M_wishlist->remove_from_wishlist($id_customer, $id_product);
+        echo json_encode(['status' => 'removed']);
+    } else {
+        $this->M_wishlist->add_to_wishlist(['id_customer' => $id_customer, 'id_product' => $id_product]);
+        echo json_encode(['status' => 'added']);
+    }
+}
+
+public function submit_review()
+{
+    if (!$this->session->userdata('logged_in')) {
+        redirect('customer/login');
+    }
+
+    $data = array(
+        'id_product' => $this->input->post('id_product'),
+        'user_name' => $this->session->userdata('email'), // Atau gunakan nama pengguna jika tersedia
+        'comment' => $this->input->post('comment'),
+        'rating' => $this->input->post('rating'),
+        'created_at' => date('Y-m-d H:i:s') // Tambahkan timestamp jika diperlukan
+    );
+
+    $this->m_customer->add_review($data);
+    $this->session->set_flashdata('pesan', 'Ulasan berhasil ditambahkan!');
+    redirect('store/detail_product/' . $data['id_product']);
+}
+public function exportpdf($no_order)
+    {
+        $data = array(
+            'title' => 'Pesanan Saya',
+            'details' => $this->m_orders->get_details_order($no_order),
+            'content' => 'customer/v_details_order'
+        );  
+        $sroot      = $_SERVER['DOCUMENT_ROOT'];
+        include $sroot . "/playnation/application/third_party/dompdf/autoload.inc.php";
+        $dompdf = new Dompdf\Dompdf();
+
+        $this->load->view('invoice/invoice-receipt', $data);
+
+        $paper_size  = 'A4'; // ukuran kertas 
+        $orientation = 'landscape'; //tipe format kertas potrait atau landscape 
+        $html = $this->output->get_output();
+        $dompdf->set_paper($paper_size, $orientation);
+        //Convert to PDF 
+        $dompdf->load_html($html);
+        $dompdf->render();
+        $dompdf->stream("invoice-$no_order.pdf", array('Attachment' => 0));
+    }
 
 }
 

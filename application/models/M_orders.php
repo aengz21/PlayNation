@@ -79,6 +79,29 @@ class M_orders extends CI_Model
         $this->db->where('no_order', $data['no_order']);
         $this->db->update('tbl_orders', $data);
     }
+
+    public function get_filtered_orders($status = null, $search = null)
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_orders');
+        $this->db->where('id_customer', $this->session->userdata('id_customer'));
+
+        if ($status && $status != 'all') {
+            $this->db->where('status', $status);
+        }
+
+        if ($search) {
+            $this->db->like('no_order', $search);
+        }
+
+        $query = $this->db->get();
+        $result = $query->result();
+
+        // Tambahkan log untuk debugging
+        log_message('debug', 'Orders: ' . print_r($result, true));
+
+        return $result;
+    }
 }
 
 
