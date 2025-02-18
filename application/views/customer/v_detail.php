@@ -86,23 +86,41 @@
     </div>
 
     <div class="row mt-5">
-        <div class="col-md-12">
-            <div class="card border-0 rounded shadow-lg" style="background-color: #fff;">
-                <div class="card-body">
+    <div class="col-md-12">
+        <div class="card border-0 rounded shadow-lg" style="background-color: #fff;">
+            <div class="card-body">
+                <h3 class="font-weight-bold text-primary">Komentar & Rating</h3>
+                <hr>
                 <div class="existing-comments">
-                            <h4>Komentar dan Rating yang Sudah Diberikan:</h4>
-                            <?php foreach ($comments as $comment): ?>
-                                <div class="comment">
-                                    <p><strong><?= $comment->user_name; ?>:</strong> <?= $comment->comment; ?></p>
-                                    <p>Rating: <?= $comment->rating; ?>/5</p>
+                    <?php if (!empty($comments)) : ?>
+                        <?php foreach ($comments as $comment): ?>
+                            <div class="comment-box">
+                                <div class="comment-avatar">
+                                    <img src="<?= base_url('assets/avatars/' . (isset($comment->avatar) ? $comment->avatar : 'default.png')); ?>" alt="Avatar">
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <strong><?= $comment->user_name; ?></strong> - 
+                                        <span class="comment-rating">
+                                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                <i class="fa fa-star <?= $i <= $comment->rating ? 'rated' : ''; ?>"></i>
+                                            <?php endfor; ?>
+                                        </span>
+                                    </div>
+                                    <p class="comment-text"><?= $comment->comment; ?></p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else : ?>
+                        <p class="text-muted">Belum ada komentar.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
+
 
                     </div>
                 </div>
@@ -133,6 +151,62 @@
     .text-red .heart-icon {
         color: #e74c3c; /* Warna ikon merah jika di wishlist */
     }
+    .comment-box {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    background: #f9f9f9;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.comment-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.comment-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.comment-content {
+    flex-grow: 1;
+}
+
+.comment-header {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.comment-rating {
+    color: #f39c12;
+    font-size: 1rem;
+}
+
+.comment-rating .fa-star {
+    margin-left: 3px;
+}
+
+.comment-rating .rated {
+    color: #f1c40f;
+}
+
+.comment-text {
+    font-size: 1rem;
+    color: #34495e;
+    margin-top: 5px;
+    line-height: 1.5;
+}
+
     
 </style>
 

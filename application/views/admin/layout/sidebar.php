@@ -47,7 +47,7 @@
                                                     echo 'show';
                                                 } ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-3 collapse-inner rounded">
-                <h6 class="collapse-header">KATEGORI, PRODUK, BRANDS, ACCESSORIS</h6>
+                <h6 class="collapse-header">KATEGORI, PRODUK, BRANDS</h6>
                 <a class="collapse-item <?php if (
                                             $this->uri->segment(1) == 'categories'
                                         ) {
@@ -63,11 +63,6 @@
                                         ) {
                                             echo 'active';
                                         } ?>" href="<?= base_url('brands'); ?>">BRANDS</a>
-                <a class="collapse-item <?php if (
-                                            $this->uri->segment(1) == 'accessoris'
-                                        ) {
-                                            echo 'active';
-                                        } ?>" href="<?= base_url('accessoris'); ?>">ACCESSORIS</a>
             </div>
         </div>
     </li>

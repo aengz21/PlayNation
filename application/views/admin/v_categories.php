@@ -75,8 +75,6 @@
                 <div class="form-group">
                     <label for="kategori">Kategori</label>
                     <input type="text" name="kategori" class="form-control" placeholder="Nama Kategori" required>
-                    <label for="Icon">Icon</label>
-                    <input type="text" name="icon" class="form-control" placeholder="Icon" required>
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>

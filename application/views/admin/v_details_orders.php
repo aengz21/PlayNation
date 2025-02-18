@@ -42,15 +42,24 @@
                 </tr>
                 <tr>
                     <td>
+                        EMAIL
+                    </td>
+                    <td>:</td>
+                    <td>
+                        <?= isset($details[0]->email) ? $details[0]->email : 'N/A'; ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
                         KURIR / SERVICE / COST
                     </td>
                     <td>:</td>
                     <td>
                         <?= isset($details[0]->courier) ? strtoupper($details[0]->courier) : 'N/A'; ?> /
                         <?= isset($details[0]->layanan_courier) ? strtoupper($details[0]->layanan_courier) : 'N/A'; ?> /
-                        Rp.
-                        <?= isset($details[0]->ongkir) ? $details[0]->ongkir : 'N/A'; ?>
+                        Rp. <?= isset($details[0]->ongkir) ? number_format($details[0]->ongkir, 0, ',', '.') : 'N/A'; ?>
                     </td>
+
                 </tr>
                 <tr>
                     <td>
@@ -88,13 +97,13 @@
                         <?php if ($details[0]->status == 0) { ?>
                             <button class="btn btn-light">Belum Di Bayar</button>
                         <?php } else if ($details[0]->status == 1) { ?>
-                            <button class="btn btn-success">Sudah di bayar</button>
+                                <button class="btn btn-success">Sudah di bayar</button>
                         <?php } else if ($details[0]->status == 2) { ?>
-                            <button class="btn btn-success">Sedang Dikirim</button>
+                                    <button class="btn btn-success">Sedang Dikirim</button>
                         <?php } else if ($details[0]->status == 3) { ?>
-                            <button class="btn btn-success">Diterima</button>
+                                        <button class="btn btn-success">Diterima</button>
                         <?php } else if ($details[0]->status == 4) { ?>
-                            <button class="btn btn-danger">Dibatalkan</button>
+                                            <button class="btn btn-danger">Dibatalkan</button>
                         <?php } ?>
                     </td>
                 </tr>
@@ -113,11 +122,14 @@
                     </td>
                     <td>:</td>
                     <td>
-                        <button class="btn btn-sm btn-warning m-1" data-toggle="modal" data-target="#inputresi<?= $details[0]->id_order ?>"><i class="fas fa-edit"></i>Input
+                        <button class="btn btn-sm btn-warning m-1" data-toggle="modal"
+                            data-target="#inputresi<?= $details[0]->id_order ?>"><i class="fas fa-edit"></i>Input
                             Resi</button>
-                        <button class="btn btn-sm btn-warning m-1" data-toggle="modal" data-target="#gantistatus<?= $details[0]->id_order ?>"><i class="fas fa-edit"></i>Ubah
+                        <button class="btn btn-sm btn-warning m-1" data-toggle="modal"
+                            data-target="#gantistatus<?= $details[0]->id_order ?>"><i class="fas fa-edit"></i>Ubah
                             Status</button>
-                        <a href="<?= base_url() . 'orders/exportpdf/' . $details[0]->no_order ?>"><button class="btn btn-sm btn-success m-1" <i class="fas fa-edit"></i>Download
+                        <a href="<?= base_url() . 'orders/exportpdf/' . $details[0]->no_order ?>"><button
+                                class="btn btn-sm btn-success m-1" <i class="fas fa-edit"></i>Download
                                 Invoices</button></a>
                     </td>
                 </tr>
@@ -135,7 +147,8 @@
                         <tr style="background: #edf2f7;">
                             <td class="b-none" width="25%">
                                 <div class="wrapper-image-cart">
-                                    <img src="<?= base_url('assets/products_img/' . $value->image) ?>" style="width: 100%; height: 100%; object-fit: cover; border-radius: .5rem;">
+                                    <img src="<?= base_url('assets/products_img/' . $value->image) ?>"
+                                        style="width: 100%; height: 100%; object-fit: cover; border-radius: .5rem;">
                                 </div>
                             </td>
                             <td class="b-none" width="50%">
@@ -151,7 +164,8 @@
                             </td>
                             <td class="b-none text-right">
                                 <p class="m-0 font-weight-bold">Rp.
-                                    <?= number_format($value->price - ($value->price * $value->discount / 100)) ?></p>
+                                    <?= number_format($value->price - ($value->price * $value->discount / 100)) ?>
+                                </p>
                             </td>
                         </tr>
                     </tbody>
@@ -167,7 +181,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Input Resi Untuk Pesanan: <?= $value->no_order;  ?></h5>
+                    <h5 class="modal-title">Input Resi Untuk Pesanan: <?= $value->no_order; ?></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -178,7 +192,8 @@
                     ?>
                     <div class="form-group">
                         <label for="no_resi">NOMOR RESI:</label>
-                        <input type="text" name="no_resi" value="<?= $value->no_resi; ?>" class="form-control" placeholder="Nomor Resi" required>
+                        <input type="text" name="no_resi" value="<?= $value->no_resi; ?>" class="form-control"
+                            placeholder="Nomor Resi" required>
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
@@ -203,7 +218,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Ganti Status Untuk Pesanan: <?= $value->no_order;  ?></h5>
+                    <h5 class="modal-title">Ganti Status Untuk Pesanan: <?= $value->no_order; ?></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -218,13 +233,13 @@
                             <?php if ($value->status == 0) { ?>
                                 <option value="<?= $value->status ?>">Belum Di Bayar</option>
                             <?php } else if ($value->status == 1) { ?>
-                                <option value="<?= $value->status ?>">Sudah Di Bayar</option>
+                                    <option value="<?= $value->status ?>">Sudah Di Bayar</option>
                             <?php } else if ($value->status == 2) { ?>
-                                <option value="<?= $value->status ?>">Sedang Di Kirim</option>
+                                        <option value="<?= $value->status ?>">Sedang Di Kirim</option>
                             <?php } else if ($value->status == 3) { ?>
-                                <option value="<?= $value->status ?>">Diterima</option>
+                                            <option value="<?= $value->status ?>">Diterima</option>
                             <?php } else if ($value->status == 4) { ?>
-                                <option value="<?= $value->status ?>">Dibatalkan</option>
+                                                <option value="<?= $value->status ?>">Dibatalkan</option>
                             <?php } ?>
                             <option value="0">Belum Di Bayar</option>
                             <option value="1">Sudah Di Bayar</option>
@@ -248,3 +263,37 @@
     </div>
 
 <?php } ?>
+
+<script>
+    $(document).on("status", ".update-status", function () {
+    var id_order = $(this).data("id");
+    var status = $(this).val();
+
+    $.ajax({
+        url: "<?= base_url('order/update_status') ?>",
+        type: "POST",
+        data: { id_order: id_order, status: status },
+        dataType: "json",
+        success: function (response) {
+            if (response.status === "success") {
+                Swal.fire({
+                    icon: "success",
+                    title: "Status diperbarui",
+                    text: "Pesan telah dikirim ke pelanggan.",
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Gagal",
+                    text: "Gagal memperbarui status.",
+                    timer: 3000,
+                    showConfirmButton: false,
+                });
+            }
+        },
+    });
+});
+
+</script>

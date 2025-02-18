@@ -21,7 +21,6 @@ class Store extends CI_Controller
             'settings' => $this->m_settings->get_data(), // Pengaturan toko
             'category' => $this->m_store->get_all_data_category(), // Data kategori beserta ikon
             'brand' => $this->m_store->get_all_data_brands(),
-            'accessoris' => $this->m_store->get_all_data_accessories(),
             'slider' => $this->m_sliders->get_all_data_bystatus(), // Slider
             'content' => 'customer/v_index'
         );

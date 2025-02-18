@@ -41,11 +41,6 @@
                         </div>
                     </div>
 
-                    <h5 class="font-weight-bold">Search by Price</h5>
-                    <div class="form-group">
-                        <input type="number" class="form-control mb-2" name="min_price" placeholder="Min Price">
-                        <input type="number" class="form-control" name="max_price" placeholder="Max Price">
-                    </div>
 
                     <button class="btn btn-primary btn-block" type="submit">Filter</button>
                 </form>

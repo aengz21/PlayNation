@@ -55,7 +55,7 @@ class Adminauth extends CI_Controller
     private function process_login()
     {
         $username = $this->input->post('username');
-        $password = md5($this->input->post('password'));
+        $password = ($this->input->post('password'));
         $this->admin_login->login($username, $password);
     }
 }

@@ -65,6 +65,7 @@ class Shopping extends CI_Controller
                     'nama_penerima' => $this->input->post('nama_lengkap'),
                     'no_order' => $this->input->post('no_order'),
                     'no_telp' => $this->input->post('phone'),
+                    'email' => $this->input->post('email'),
                     'provinsi' => $this->input->post('provinsi'),
                     'kota' => $this->input->post('kota'),
                     'alamat' => $this->input->post('alamat'),

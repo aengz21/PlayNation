@@ -16,8 +16,9 @@
                     <h5 class="font-weight-bold">MAIN MENU</h5>
                     <hr>
                     <ul class="list-group">
-                        <a href="<?= base_url('customer/account') ?>" class="list-group-item text-decoration-none text-dark text-uppercase"><i class="fas fa-user-circle"></i> Account</a>
-                        <a href="<?= base_url('customer/my_orders') ?>" class="list-group-item text-decoration-none text-dark text-uppercase"><i class="fas fa-shopping-cart"></i> My Order</a>
+                        <a href="<?= base_url('customer/account') ?>" class="list-group-item text-decoration-none text-dark text-uppercase "><i class="fas fa-user-circle"></i> Account</a>
+                        <a href="<?= base_url('customer/my_orders') ?>" class="list-group-item text-decoration-none text-dark text-uppercase active"><i class="fas fa-shopping-cart"></i> My Order</a>
+                        <a href="<?= base_url('customer/wishlist') ?>" class="list-group-item text-decoration-none text-dark text-uppercase"><i class="fas fa-heart"></i> Wishlist</a>
                         <a href="<?= base_url('customer/logout') ?>" style="cursor:pointer" class="list-group-item text-decoration-none text-dark text-uppercase"><i class="fas fa-sign-out-alt"></i> Logout</a>
                     </ul>
                 </div>

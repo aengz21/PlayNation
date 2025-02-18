@@ -35,6 +35,7 @@
                             <th>Nama</th>
                             <th>Username</th>
                             <th>Password</th>
+                            <th>Email</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -46,6 +47,8 @@
                                 <td><?= $value->nama; ?></td>
                                 <td><?= $value->username; ?></td>
                                 <td><?= $value->password; ?></td>
+                                <td><?= $value->email; ?></td>
+
                                 <td>
                                    <?php if($value->username  != "admin") { ?>
                                     <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#edit<?= $value->id_admin ?>"><i class="fas fa-edit"></i></button>

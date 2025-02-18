@@ -45,6 +45,8 @@ class Admin_login
         redirect('adminauth/admin_login'); 
     }
 
+    
+
 }
 
 /* End of file Admin_login.php */

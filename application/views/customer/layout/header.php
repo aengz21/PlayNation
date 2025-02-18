@@ -181,10 +181,6 @@
                                                     </a>
                                                 <?php } ?>
                                             </div>
-                                            <div class="col-md-4 dropdown-section">
-                                                <h6 class="dropdown-header">ACCESSORIES</h6>
-                                               <php foreach($) ?></php>
-                                            </div>
                                         </div>
                                     </div>
                                 </li>

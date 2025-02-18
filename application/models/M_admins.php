@@ -12,7 +12,7 @@ class M_admins extends CI_Model
         $this->db->order_by('id_admin', 'asc');
         return $this->db->get()->result();
     }
-    
+
     public function is_username_exists($username)
     {
         $this->db->where('username', $username);
@@ -38,6 +38,11 @@ class M_admins extends CI_Model
         $this->db->where('id_admin', $data['id_admin']);
         $this->db->delete('tbl_admin', $data);
     }
+    public function get_all_admins()
+    {
+        return $this->db->get('tbl_admin')->result();
+    }
+
 }
 
 

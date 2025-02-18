@@ -26,13 +26,7 @@ class M_store extends CI_Model
         $query = $this->db->get();
         return $query->result();
     }
-    public function get_all_data_accessories()
-    {
-        $this->db->select('*');
-        $this->db->from('tbl_accessoris');
-        $query = $this->db->get();
-        return $query->result();
-    }
+
     public function get_all_promo_products() {
         $this->db->select('*');
         $this->db->from('tbl_products');

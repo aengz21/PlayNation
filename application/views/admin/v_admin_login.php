@@ -63,6 +63,9 @@
                         </div>
                         <button type="submit" class="btn btn-primary btn-block">LOGIN</button>
                         <hr>
+                        <center>
+                        <a href="<?= base_url('Adminauth/lupa_password')?>">Lupa Password?</a>
+                        </center>
                         <?php echo form_close() ?>
 
                     </div>

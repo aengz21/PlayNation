@@ -51,15 +51,19 @@ class Orders extends CI_Controller
 
     public function gantistatus($no_order)
     {
-        $data = array(
-            'no_order' => $no_order,
-            'status' => $this->input->post('status'),
-        );
-
-        $this->m_orders->gantistatus($data);
-        $this->session->set_flashdata('pesan', 'Status Berhasil Di Update !');
-
-        redirect('orders/details/' . $no_order);
+        {
+            $id_order = $this->input->post('id_order');
+            $status_baru = $this->input->post('status');
+    
+            $this->load->model('m_orders');
+            $result = $this->m_orders->gantistatus()($id_order, $status_baru);
+    
+            if ($result) {
+                echo json_encode(['status' => 'success', 'message' => 'Status diperbarui dan pesan dikirim']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal memperbarui status']);
+            }
+        }
     }
 
     public function exportpdf($no_order)
@@ -84,6 +88,9 @@ class Orders extends CI_Controller
         $dompdf->render();
         $dompdf->stream("invoice-$no_order.pdf", array('Attachment' => 0));
     }
+
+
+    
 }
 
 /* End of file Orders.php */

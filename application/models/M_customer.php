@@ -26,11 +26,11 @@ class M_customer extends CI_Model
         return $this->db->get_where('tbl_customers', ['email' => $email])->row();
     }
 
-    // public function set_password_reset_token($id_customer, $token)
-    // {
-    //     $this->db->where('id_customer', $id_customer);
-    //     $this->db->update('tbl_customers', ['reset_token' => $token, 'token_expiry' => date('Y-m-d H:i:s', strtotime('+1 hour'))]);
-    // }
+    public function set_password_reset_token($id_customer, $token)
+    {
+        $this->db->where('id_customer', $id_customer);
+        $this->db->update('tbl_customers', ['reset_token' => $token, 'token_expiry' => date('Y-m-d H:i:s', strtotime('+1 hour'))]);
+    }
 
     public function get_by_reset_token($token)
     {
