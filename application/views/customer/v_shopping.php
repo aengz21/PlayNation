@@ -117,18 +117,21 @@
                             </div>
                         </div>
 
+
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="font-weight-bold">NO. HP / WHATSAPP</label>
                                 <input type="number" class="form-control" id="phone" name="phone" placeholder="No. HP / WhatsApp" required>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="font-weight-bold">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
                             </div>
-                        </div>
+
+                            <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="font-weight-bold">EMAIL</label>
+                                <input type="text" class="form-control" id="text" name="email" placeholder="Email" required>
+                            </div>
+                            </div>
 
                         <div class="col-md-12">
                             <div class="form-group">

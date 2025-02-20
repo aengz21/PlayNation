@@ -75,6 +75,10 @@ class M_orders extends CI_Model
     }
 
     //Ganti Status
+    public function gantistatus($data){
+        $this->db->where('no_order', $data['no_order']);
+        $this->db->update('tbl_orders', $data);
+    }
 
     public function get_filtered_orders($status = null, $search = null)
     {
@@ -97,54 +101,6 @@ class M_orders extends CI_Model
         log_message('debug', 'Orders: ' . print_r($result, true));
 
         return $result;
-    }
-    public function gantistatus($data , $id_order, $status_baru) {
-         // Ambil nomor HP dari order berdasarkan ID
-         $order = $this->db->get_where('tb_order', ['id_order' => $id_order])->row();
-         if (!$order) {
-             return false;
-         }
- 
-         $nomor_hp = $order->nomor_hp;
- 
-         // Update status di database
-         $this->db->where('id_order', $id_order);
-         $this->db->update('tb_order', ['status' => $status_baru]);
- 
-         // Kirim pesan WhatsApp atau SMS
-         return $this->kirim_pesan($nomor_hp, $status_baru);
-     }
- 
-     private function kirim_pesan($nomor_hp, $status)
-     {
-         $pesan = "Halo, pesanan Anda dengan ID #" . $nomor_hp . " telah berubah status menjadi: " . $status;
- 
-         // API WhatsApp / SMS
-         $api_url = "https://api.whatsapp.com/send?phone=" . $nomor_hp . "&text=" . urlencode($pesan);
- 
-         // Kirim request
-         $ch = curl_init();
-         curl_setopt($ch, CURLOPT_URL, $api_url);
-         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-         $result = curl_exec($ch);
-         curl_close($ch);
- 
-         return $result;
-    }
-
-    // Tambahkan method untuk mendapatkan history status
-    public function get_status_history($no_order) {
-        $this->db->select('status_history.*, admin.username as changed_by');
-        $this->db->from('tbl_status_history as status_history');
-        $this->db->join('tbl_admin as admin', 'status_history.admin_id = admin.id_admin', 'left');
-        $this->db->where('no_order', $no_order);
-        $this->db->order_by('created_at', 'desc');
-        return $this->db->get()->result();
-    }
-
-    // Tambahkan method untuk menyimpan history status
-    public function save_status_history($data) {
-        return $this->db->insert('tbl_status_history', $data);
     }
 }
 

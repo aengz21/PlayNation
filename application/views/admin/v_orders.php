@@ -33,6 +33,7 @@
                             <th>No Invoice</th>
                             <th>Nama Penerima</th>
                             <th>Tanggal Order</th>
+                            <th>Total Harga</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -44,6 +45,7 @@
                                 <td><?= $value->no_order; ?></td>
                                 <td><?= $value->nama_penerima; ?></td>
                                 <td><?= $value->tgl_order; ?></td>
+                                <td><?= 'Rp. ' . number_format($value->total_bayar, 0, ',', '.'); ?></td>
                                 <td class="text-center">
                                     <a href="<?= base_url('orders/details/'.$value->no_order) ?>" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i>Rincian</a>
                                 </td>

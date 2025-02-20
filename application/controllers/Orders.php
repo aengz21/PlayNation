@@ -51,18 +51,57 @@ class Orders extends CI_Controller
 
     public function gantistatus($no_order)
     {
-        {
-            $id_order = $this->input->post('id_order');
-            $status_baru = $this->input->post('status');
-    
-            $this->load->model('m_orders');
-            $result = $this->m_orders->gantistatus()($id_order, $status_baru);
-    
-            if ($result) {
-                echo json_encode(['status' => 'success', 'message' => 'Status diperbarui dan pesan dikirim']);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'Gagal memperbarui status']);
-            }
+        $status = $this->input->post('status');
+        $data = array(
+            'no_order' => $no_order,
+            'status' => $status,
+        );
+
+        $this->m_orders->gantistatus($data);
+        $this->session->set_flashdata('pesan', 'Status Berhasil Di Update !');
+
+        // Mengambil detail order untuk mendapatkan email customer
+        $order_details = $this->m_orders->get_details_order($no_order);
+        if ($order_details) {
+            $customer_email = $order_details[0]->email;
+            $this->send_status_email($customer_email, $status);
+        }
+
+        redirect('orders/details/' . $no_order);
+    }
+
+    private function send_status_email($to_email, $status)
+    {
+        $this->load->library('email');
+
+        $this->email->from('your_email@example.com', 'Your Name');
+        $this->email->to($to_email);
+
+        $this->email->subject('Perubahan Status Pesanan Anda');
+        $this->email->message('Halo, kami ingin memberitahukan bahwa status pesanan Anda telah berubah menjadi: ' . $this->get_status_text($status) . '. Terima kasih atas kepercayaan Anda kepada kami.');
+
+        if ($this->email->send()) {
+            log_message('info', 'Email pemberitahuan status pesanan berhasil dikirim ke ' . $to_email);
+        } else {
+            log_message('error', 'Gagal mengirim email pemberitahuan status pesanan ke ' . $to_email);
+        }
+    }
+
+    private function get_status_text($status)
+    {
+        switch ($status) {
+            case 0:
+                return 'Belum Di Bayar';
+            case 1:
+                return 'Sudah Di Bayar';
+            case 2:
+                return 'Sedang Di Kirim';
+            case 3:
+                return 'Diterima';
+            case 4:
+                return 'Dibatalkan';
+            default:
+                return 'Tidak Diketahui';
         }
     }
 
@@ -88,9 +127,6 @@ class Orders extends CI_Controller
         $dompdf->render();
         $dompdf->stream("invoice-$no_order.pdf", array('Attachment' => 0));
     }
-
-
-    
 }
 
 /* End of file Orders.php */
