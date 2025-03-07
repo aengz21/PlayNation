@@ -380,7 +380,7 @@ public function forgot_password()
             'content' => 'customer/v_forgot_password'
         );
 
-        $this->load->view('customer/layout/wrapper', $data, false);
+        $this->load->view('customer/layout/warpper-forgot', $data, false);
     } else {
         $email = $this->input->post('email');
         $user = $this->m_customer->get_by_email($email);

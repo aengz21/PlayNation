@@ -39,13 +39,13 @@
             <div class="card-header" id="heading3">
                 <h2 class="mb-0">
                     <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse3" aria-expanded="true" aria-controls="collapse3">
-                        Apakah harga di PSe Gameshop bisa ditawar?
+                        Apakah harga di Playnation bisa ditawar?
                     </button>
                 </h2>
             </div>
             <div id="collapse3" class="collapse" aria-labelledby="heading3" data-parent="#faqAccordion">
                 <div class="card-body">
-                    Harga di PSe Gameshop adalah harga tetap dan tidak dapat ditawar.
+                    Harga di Playnation adalah harga tetap dan tidak dapat ditawar.
                 </div>
             </div>
         </div>
@@ -53,13 +53,13 @@
             <div class="card-header" id="heading4">
                 <h2 class="mb-0">
                     <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="true" aria-controls="collapse4">
-                        Dimanakah letak toko PSe Gameshop?
+                        Dimanakah letak toko Playnation?
                     </button>
                 </h2>
             </div>
             <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#faqAccordion">
                 <div class="card-body">
-                    Toko kami berlokasi di [alamat toko].
+                    Toko kami berlokasi di Desa Cimahpar, RT/RW : 003/003, Kecamatan MoroKrembangan, Kota Surabaya, Jawa timur, 16155
                 </div>
             </div>
         </div>
@@ -87,7 +87,7 @@
             </div>
             <div id="collapse6" class="collapse" aria-labelledby="heading6" data-parent="#faqAccordion">
                 <div class="card-body">
-                    PS4 Slim dan PS4 Pro memiliki perbedaan dalam [deskripsi perbedaan].
+                    PS4 Slim dan PS4 Pro memiliki perbedaan dalam performa dan fitur. PS4 Slim lebih hemat daya, sementara PS4 Pro menawarkan resolusi 4K dan lebih kuat untuk game yang memerlukan banyak daya.
                 </div>
             </div>
         </div>
@@ -133,33 +133,6 @@
                 </div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-header" id="heading10">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse10" aria-expanded="true" aria-controls="collapse10">
-                        Apakah PS4 ada garansi?
-                    </button>
-                </h2>
-            </div>
-            <div id="collapse10" class="collapse" aria-labelledby="heading10" data-parent="#faqAccordion">
-                <div class="card-body">
-                    Ya, PS4 dilengkapi dengan garansi [durasi garansi].
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header" id="heading11">
-                <h2 class="mb-0">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse11" aria-expanded="true" aria-controls="collapse11">
-                        Garansi mesin / console meliputi apa saja, berapa lama garansi mesinnya?
-                    </button>
-                </h2>
-            </div>
-            <div id="collapse11" class="collapse" aria-labelledby="heading11" data-parent="#faqAccordion">
-                <div class="card-body">
-                    Garansi meliputi [deskripsi garansi] dan berlaku selama [durasi garansi].
-                </div>
-            </div>
         </div>
     </div>
 </div>
